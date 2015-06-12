@@ -1,4 +1,4 @@
-package notparallel;
+package notparallel.twoD;
 
 import javafx.application.Application;
 import javafx.concurrent.Task;
@@ -57,7 +57,7 @@ public class SequentiellOutputJFX extends Application {
             };
     /*
     alte Werte
-    float[][] u1 = {{10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+    float[][] u1_2D = {{10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
     {50, 10, 10, 10, 10, 10, 10, 10, 10, 10},
     {50, 10, 10, 10, 10, 10, 10, 10, 10, 10},
     {50, 10, 10, 10, 10, 10, 10, 10, 10, 10},
@@ -71,7 +71,7 @@ public class SequentiellOutputJFX extends Application {
     float[][] u1 = new float[NX][NY];
     // neue werte (mit Randbedingungen)
     /*
-    float[][] u2 = {{10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
+    float[][] u2_2D = {{10, 10, 10, 10, 10, 10, 10, 10, 10, 10},
             {50, 0, 0, 0, 0, 0, 0, 0, 0, 10},
             {50, 0, 0, 0, 0, 0, 0, 0, 0, 10},
             {50, 0, 0, 0, 0, 0, 0, 0, 0, 10},
@@ -175,7 +175,7 @@ public class SequentiellOutputJFX extends Application {
                                 rectangle.setFill(computeColor3((float) u2[ix][iy]));
                             }
                             // Neue Werte, sind jetzt alte Werte
-                            // Tausch u1 = u2, geht so nicht, da arrayreferenzen
+                            // Tausch u1_2D = u2_2D, geht so nicht, da arrayreferenzen
                             // gebildet werden
                             // Inhalte müssen explizit getauscht werden
                             u1[ix][iy] = u2[ix][iy];

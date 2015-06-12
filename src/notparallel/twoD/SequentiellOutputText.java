@@ -1,4 +1,4 @@
-package notparallel;
+package notparallel.twoD;
 
 import java.text.DecimalFormat;
 
