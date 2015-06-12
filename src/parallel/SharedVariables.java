@@ -33,4 +33,9 @@ public class SharedVariables {
      * 3D Array mit folgender Koordinatenreihenfolge: [x][y][z]. Abbildung des Quaders.
      */
     public static float[][][] u2 = new float[QLR][QBR][QHR];
+
+    /**
+     * Enthält u1 die Ausgangswerte zur Berechnung?
+     */
+    public static boolean isu1Base = true;
 }

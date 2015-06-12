@@ -1,5 +1,7 @@
 package parallel;
 
+import java.text.DecimalFormat;
+
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -7,12 +9,15 @@ import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
-public class OutputJFX extends Application {
+public class CopyOfOutputJFX_oldWithTextAndError extends Application {
 
 	// 11 Farben (müssen insgesamt 11 sein!!!)
 	private final Color[] COLORS = { Color.rgb(0, 0, 255), // blau
@@ -50,21 +55,28 @@ public class OutputJFX extends Application {
 		for (int x = 0; x < SharedVariables.QLR; x++) {
 			for (int y = 0; y < SharedVariables.QBR; y++) {
 				Rectangle r = new Rectangle();
-				r.setWidth(10);
-				r.setHeight(10);
+				r.setWidth(40);
+				r.setHeight(40);
 				// r.setStroke(Color.BLACK);
 				r.setFill(computeColor(SharedVariables.u1[x][y][zHalf]));
 
+				// Text hinzufügen, um Werte zu prüfen
+				Text text = new Text(SharedVariables.u1[x][y][zHalf] + "");
+				text.setFont(Font.font("Verdana", 10));
+				StackPane stack = new StackPane();
+				stack.getChildren().addAll(r, text);
+				// Ende Text
+
 				// Erst y dann x, damit linke Seite links dargestellt wird
-				gridpane.add(r, y, x);
+				gridpane.add(stack, y, x);
 			}
 		}
 
 		// Farbskala ausgeben
 		for (int i = 0; i < 11; i++) {
 			Rectangle r = new Rectangle();
-			r.setWidth(10);
-			r.setHeight(10);
+			r.setWidth(40);
+			r.setHeight(40);
 			r.setFill(COLORS[i]);
 			gridpane.add(r, i, InitializeParameter.QL + 3);
 		}
@@ -82,36 +94,50 @@ public class OutputJFX extends Application {
 				for (int n = 1; n <= InitializeParameter.N; n++) {
 
 					// Berechnung aller Quaderfelder (Rand wird nicht verändert)
+					// Thread t1 = new Thread(new ComputingAlgorithmus(1,
+					// SharedVariables.QLR - 1));
 
-					// 2 Threads für 50er Quader
-					// Die Hälte+1-1
-					Thread t1 = new Thread(new ComputingAlgorithmus(1, 26 - 1));
-					// Die Hälfte
-					Thread t2 = new Thread(new ComputingAlgorithmus(25,
+					Thread t1 = new Thread(new ComputingAlgorithmus(1, 7 - 1));
+					Thread t2 = new Thread(new ComputingAlgorithmus(6,
 							SharedVariables.QLR - 1));
+
+					// Platform.runLater(t1);
+					// Platform.runLater(t2);
 
 					t1.start();
 					t2.start();
-					t2.join();
 					t1.join();
+					t2.join();
+					DecimalFormat f = new DecimalFormat("0.0");
 
 					// Ausgabe, alle Felder berücksichtigen
 					for (int x = 0; x < SharedVariables.QLR; x++) {
 						for (int y = 0; y < SharedVariables.QBR; y++) {
+							// Farben berechnen und zuweisen
+							// Ohne Text
+							// Rectangle rectangle = (Rectangle)
+							// getNodeFromGridPane(
+							// gridpane, y, x);
 							float temperature;
 							if (SharedVariables.isu1Base) {
 								temperature = SharedVariables.u2[x][y][zHalf];
 							} else {
 								temperature = SharedVariables.u1[x][y][zHalf];
 							}
-							// Farben berechnen und zuweisen
-							Rectangle rectangle = (Rectangle) getNodeFromGridPane(
-									gridpane, y, x);
 
+							// Zahlen mit ausgeben
+							StackPane stack = (StackPane) getNodeFromGridPane(
+									gridpane, y, x);
+							Rectangle rectangle = (Rectangle) stack
+									.getChildren().get(0);
 							if (rectangle != null) {
 								rectangle.setFill(computeColor(temperature));
 							}
-
+							Text text = (Text) stack.getChildren().get(1);
+							if (text != null) {
+								text.setText(f.format(temperature) + "");
+							}
+							// Ende Text
 						}
 					}
 
