@@ -1,32 +1,20 @@
 package parallel;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.concurrent.Task;
-import javafx.geometry.Insets;
-import javafx.scene.Node;
 import javafx.scene.Scene;
+import javafx.scene.image.ImageView;
+import javafx.scene.image.PixelWriter;
+import javafx.scene.image.WritableImage;
 import javafx.scene.layout.BorderPane;
-import javafx.scene.layout.GridPane;
 import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
+/**
+ * Visualisierung der Wärmediffusion als 2D Querschnitt des Quaders.
+ */
 public class OutputJFX extends Application {
-
-	// 11 Farben (müssen insgesamt 11 sein!!!)
-	private final Color[] COLORS = { Color.rgb(0, 0, 255), // blau
-			Color.rgb(137, 216, 230), // hell blau
-			Color.rgb(200, 255, 200), // blau grün
-			Color.rgb(220, 255, 150), // gelb grün
-			Color.rgb(255, 255, 100, 0.8), // hell gelb
-			Color.rgb(255, 255, 0), // gelb
-			Color.rgb(255, 201, 14), // gelb orange
-			Color.rgb(255, 130, 0), // orange
-			Color.rgb(255, 80, 0), // orange rot
-			Color.rgb(255, 0, 0), // rot
-			Color.rgb(190, 1, 0) // dunkel rot
-	};
 
 	public static void main(String[] args) {
 		Application.launch(args);
@@ -38,38 +26,57 @@ public class OutputJFX extends Application {
 
 		primaryStage.setTitle("Simulation Wärmediffusion");
 		BorderPane root = new BorderPane();
-		Scene scene = new Scene(root, 600, 600, Color.WHITE);
+		// TODO Scrollbar machen
+		// 20 Pixel Außenrand
+		Scene scene = new Scene(root, SharedVariables.QBR_2D + 20,
+				SharedVariables.QLR_2D + 20, Color.WHITE);
 
-		GridPane gridpane = new GridPane();
-		gridpane.setPadding(new Insets(20));
-		gridpane.setHgap(1);
-		gridpane.setVgap(1);
+		// Image und dessen PixelWriter ist die performanteste Methode um in
+		// JavaFX Pixel darzustellen
+		ImageView imageView = new ImageView();
+		WritableImage image = new WritableImage(SharedVariables.QBR_2D,
+				SharedVariables.QLR_2D);
+		imageView.setImage(image);
+		PixelWriter pixelWriter = image.getPixelWriter();
 
+		// 1 Zelle wird als Quadrat von CELL_WIDTH Pixel visualisiert
 		// Initialisierung der Fläche
-		int zHalf = SharedVariables.QHR / 2;
-		for (int x = 0; x < SharedVariables.QLR; x++) {
-			for (int y = 0; y < SharedVariables.QBR; y++) {
-				Rectangle r = new Rectangle();
-				r.setWidth(10);
-				r.setHeight(10);
-				// r.setStroke(Color.BLACK);
-				r.setFill(computeColor(SharedVariables.u1[x][y][zHalf]));
+		for (int x = 0; x < SharedVariables.QLR_2D; x = x
+				+ InitializeParameter.CELL_WIDTH) {
+			for (int y = 0; y < SharedVariables.QBR_2D; y = y
+					+ InitializeParameter.CELL_WIDTH) {
 
-				// Erst y dann x, damit linke Seite links dargestellt wird
-				gridpane.add(r, y, x);
+				// Farbe berechnen
+				Color color = computeColor(SharedVariables.u1[x
+						/ InitializeParameter.CELL_WIDTH][y
+						/ InitializeParameter.CELL_WIDTH][SharedVariables.Z_HALF]);
+
+				// Color Array initialisieren
+				SharedVariables.tempInColor[x / InitializeParameter.CELL_WIDTH][y
+						/ InitializeParameter.CELL_WIDTH] = color;
+
+				// Zellen können mehrere Pixel groß sein
+				for (int i = x; i < x + InitializeParameter.CELL_WIDTH; i++) {
+					for (int j = y; j < y + InitializeParameter.CELL_WIDTH; j++) {
+						// Erst y dann x, damit linke Seite links dargestellt
+						// wird
+						pixelWriter.setColor(j, i, color);
+					}
+				}
+
 			}
 		}
 
-		// Farbskala ausgeben
-		for (int i = 0; i < 11; i++) {
-			Rectangle r = new Rectangle();
-			r.setWidth(10);
-			r.setHeight(10);
-			r.setFill(COLORS[i]);
-			gridpane.add(r, i, InitializeParameter.QL + 3);
-		}
+		// // Farbskala ausgeben
+		// for (int i = 0; i < 11; i++) {
+		// Rectangle r = new Rectangle();
+		// r.setWidth(10);
+		// r.setHeight(10);
+		// r.setFill(SharedVariables.COLORS[i]);
+		// gridpane.add(r, i, InitializeParameter.QL + 3);
+		// }
 
-		root.setCenter(gridpane);
+		root.setCenter(imageView);
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
@@ -78,16 +85,16 @@ public class OutputJFX extends Application {
 			@Override
 			public Void call() throws Exception {
 
-				// Thread.sleep(500);
 				for (int n = 1; n <= InitializeParameter.N; n++) {
-
 					// Berechnung aller Quaderfelder (Rand wird nicht verändert)
 
-					// 2 Threads für 50er Quader
+					// 2 Threads für 100er Quader
+					// TODO Aufteilung automatisieren
+					// TODO ThreadPooling
 					// Die Hälte+1-1
-					Thread t1 = new Thread(new ComputingAlgorithmus(1, 26 - 1));
+					Thread t1 = new Thread(new ComputingAlgorithmus(1, 51 - 1));
 					// Die Hälfte
-					Thread t2 = new Thread(new ComputingAlgorithmus(25,
+					Thread t2 = new Thread(new ComputingAlgorithmus(50,
 							SharedVariables.QLR - 1));
 
 					t1.start();
@@ -95,26 +102,56 @@ public class OutputJFX extends Application {
 					t2.join();
 					t1.join();
 
-					// Ausgabe, alle Felder berücksichtigen
-					for (int x = 0; x < SharedVariables.QLR; x++) {
-						for (int y = 0; y < SharedVariables.QBR; y++) {
-							float temperature;
-							if (SharedVariables.isu1Base) {
-								temperature = SharedVariables.u2[x][y][zHalf];
-							} else {
-								temperature = SharedVariables.u1[x][y][zHalf];
-							}
-							// Farben berechnen und zuweisen
-							Rectangle rectangle = (Rectangle) getNodeFromGridPane(
-									gridpane, y, x);
+					// Fläche neu einfärben
+					Platform.runLater(new Runnable() {
 
-							if (rectangle != null) {
-								rectangle.setFill(computeColor(temperature));
+						@Override
+						public void run() {
+							// ImageView imageView2 = (ImageView) root
+							// .getChildren().get(0);
+							// WritableImage image2 = (WritableImage) imageView2
+							// .getImage();
+							// PixelWriter pixelWriter2 =
+							// image2.getPixelWriter();
+
+							// Ausgabe, alle Felder berücksichtigen
+							// und Pixel entsprechend der Zellgröße anpassen
+							for (int x = 0; x < SharedVariables.QLR_2D; x = x
+									+ InitializeParameter.CELL_WIDTH) {
+								for (int y = 0; y < SharedVariables.QBR_2D; y = y
+										+ InitializeParameter.CELL_WIDTH) {
+
+									// Farbe berechnen falls tempInColor Array
+									// nicht funktioniert
+									// float temperature;
+									// if (SharedVariables.isu1Base) {
+									// temperature = SharedVariables.u2[x / 4][y
+									// / 4][SharedVariables.Z_HALF];
+									// } else {
+									// temperature = SharedVariables.u1[x / 4][y
+									// / 4][SharedVariables.Z_HALF];
+									// }
+									// Color color = computeColor(temperature);
+
+									Color color = SharedVariables.tempInColor[x
+											/ InitializeParameter.CELL_WIDTH][y
+											/ InitializeParameter.CELL_WIDTH];
+
+									for (int i = x; i < x
+											+ InitializeParameter.CELL_WIDTH; i++) {
+										for (int j = y; j < y
+												+ InitializeParameter.CELL_WIDTH; j++) {
+											pixelWriter.setColor(j, i, color);
+										}
+									}
+								}
 							}
 
 						}
-					}
+					});
 
+					// Merker setzen, welches Array die Ausgangslage für den
+					// nächsten Iterationsschritt enthält
 					if (SharedVariables.isu1Base) {
 						SharedVariables.isu1Base = false;
 					} else {
@@ -130,17 +167,10 @@ public class OutputJFX extends Application {
 
 	}
 
-	private Node getNodeFromGridPane(GridPane gridPane, int col, int row) {
-		for (Node node : gridPane.getChildren()) {
-			if (GridPane.getColumnIndex(node) == col
-					&& GridPane.getRowIndex(node) == row) {
-				return node;
-			}
-		}
-		return null;
-	}
-
-	private Paint computeColor(float temperature) {
+	/**
+	 * Berechnung des Farbwertes
+	 */
+	private Color computeColor(float temperature) {
 		// Temperatur auf 0-1 Skala mappen
 		// (value-min)/(max-min)
 		float mappedTemperatureF = (temperature - InitializeParameter.MIN_TEMP)
@@ -151,7 +181,16 @@ public class OutputJFX extends Application {
 		// Mappen auf 0-10 Skala
 		int mappedTemperatureI = Math.round(mappedTemperatureF * 10);
 
-		return COLORS[mappedTemperatureI];
+		return SharedVariables.COLORS[mappedTemperatureI];
+	}
+
+	/**
+	 * Alternative Farbberechnung (fließender Übergang)
+	 */
+	private Color computeColor2(float temperature) {
+		// 0-240
+		// Farben von 0-360 verfügbar
+		return Color.hsb(temperature, 1, 1);
 	}
 
 	/**

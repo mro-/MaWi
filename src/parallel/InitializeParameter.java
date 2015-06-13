@@ -9,19 +9,19 @@ public class InitializeParameter {
 	 * Physikalische Ausdehnung des Quaders, in der Länge (Angabe in Anzahl der
 	 * Zellen, Wert >> 1).
 	 */
-	public static final int QL = 50;
+	public static final int QL = 100;
 
 	/**
 	 * Physikalische Ausdehnung des Quaders, in der Breite (Angabe in Anzahl der
 	 * Zellen, Wert >> 1).
 	 */
-	public static final int QB = 50;
+	public static final int QB = 100;
 
 	/**
 	 * Physikalische Ausdehnung des Quaders, in der Höhe (Angabe in Anzahl der
 	 * Zellen, Wert >> 1).
 	 */
-	public static final int QH = 50;
+	public static final int QH = 100;
 
 	/**
 	 * Kantenlänge des finiten Elementes (einer Zelle).
@@ -87,5 +87,11 @@ public class InitializeParameter {
 	 * Festlegung der maximalen Temperatur (Simulationsfarbe rot).
 	 */
 	public static final float MAX_TEMP = 100;
+
+	/**
+	 * Festlegung, wie viele Pixel für die Visualisierung einer Zelle benutzt
+	 * werden sollen. z.B. Wert 4: 4x4 Pixel => 1 Quaderzelle
+	 */
+	public static final int CELL_WIDTH = 4;
 
 }
