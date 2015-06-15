@@ -94,4 +94,14 @@ public class InitializeParameter {
 	 */
 	public static final int CELL_WIDTH = 4;
 
+	/**
+	 * Gibt die Anzahl der Threads an. Konfigurierbar für die Lesitungsmessung.
+	 */
+	public static final int NUMBER_OF_THREADS = 4;
+
+	// /**
+	// * Werden die Threads mittels Threadpool verwaltet?
+	// */
+	// public static final boolean THREAD_POOL = true;
+
 }

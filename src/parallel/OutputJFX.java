@@ -1,5 +1,9 @@
 package parallel;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.concurrent.Task;
@@ -23,6 +27,7 @@ public class OutputJFX extends Application {
 	@Override
 	public void start(Stage primaryStage) {
 		initializeQuader();
+		createComputingServices();
 
 		primaryStage.setTitle("Simulation Wärmediffusion");
 		BorderPane root = new BorderPane();
@@ -81,26 +86,38 @@ public class OutputJFX extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 
+		// Verfügbare Prozessoren
+		int numberOfProcessors = Runtime.getRuntime().availableProcessors();
+
 		Task<Void> task = new Task<Void>() {
 			@Override
-			public Void call() throws Exception {
+			public Void call() {
+				// Startzeit messen
+				long startTime = System.currentTimeMillis();
+
+				// Thread-Pooling
+				ThreadPoolExecutor executor = new ThreadPoolExecutor(
+						InitializeParameter.NUMBER_OF_THREADS,
+						InitializeParameter.NUMBER_OF_THREADS, 0,
+						TimeUnit.SECONDS, new ArrayBlockingQueue<>(100));
 
 				for (int n = 1; n <= InitializeParameter.N; n++) {
 					// Berechnung aller Quaderfelder (Rand wird nicht verändert)
 
-					// 2 Threads für 100er Quader
-					// TODO Aufteilung automatisieren
-					// TODO ThreadPooling
-					// Die Hälte+1-1
-					Thread t1 = new Thread(new ComputingAlgorithmus(1, 51 - 1));
-					// Die Hälfte
-					Thread t2 = new Thread(new ComputingAlgorithmus(50,
-							SharedVariables.QLR - 1));
+					createThreadsWithoutPool();
 
-					t1.start();
-					t2.start();
-					t2.join();
-					t1.join();
+					// TODO ThreadPooling
+					// for (int i = 0; i <
+					// InitializeParameter.NUMBER_OF_THREADS; i++) {
+					// executor.execute(SharedVariables.computingServices[i]);
+					// }
+					// try {
+					// executor.awaitTermination(1, TimeUnit.SECONDS);
+					// } catch (InterruptedException e) {
+					// // TODO Auto-generated catch block
+					// e.printStackTrace();
+					// }
+					// executor.shutdown();
 
 					// Fläche neu einfärben
 					Platform.runLater(new Runnable() {
@@ -158,13 +175,62 @@ public class OutputJFX extends Application {
 						SharedVariables.isu1Base = true;
 					}
 				}
+				// Endzeit messen
+				long endTime = System.currentTimeMillis();
+				float time = (endTime - startTime) / 1000.0f;
+				System.out.println("Zeit: " + time);
+
 				return null;
 
 			}
+
 		};
 
 		new Thread(task).start();
 
+	}
+
+	/**
+	 * Erzeugt Threads ohne die Nutzung eines Thread-Poolings
+	 */
+	private void createThreadsWithoutPool() {
+		// Threads erzeugen
+		Thread[] threads = new Thread[InitializeParameter.NUMBER_OF_THREADS];
+		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
+			threads[i] = new Thread(SharedVariables.computingServices[i]);
+			threads[i].start();
+		}
+
+		// Synchronisation der Threads
+		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
+			try {
+				threads[i].join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Erzeugt die Berechnungsservices und teilt dazu den Quader in Scheiben
+	 * auf.
+	 */
+	private void createComputingServices() {
+		int start = 1;
+		int end;
+		int dataRangeQL = SharedVariables.QLR
+				/ InitializeParameter.NUMBER_OF_THREADS;
+		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
+			// Automatische Aufteilung der Daten (in Scheiben)
+			if (i < InitializeParameter.NUMBER_OF_THREADS - 1) {
+				end = start + dataRangeQL;
+			} else {
+				end = SharedVariables.QLR - 1;
+			}
+			SharedVariables.computingServices[i] = new ComputingAlgorithmus(
+					start, end);
+			start = end;
+		}
 	}
 
 	/**

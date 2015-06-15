@@ -86,4 +86,9 @@ public class SharedVariables {
 	 */
 	public static Color[][] tempInColor = new Color[QLR][QBR];
 
+	/**
+	 * Array, das die Berechnungsservices beinhaltet. (Aufteilung in Scheiben)
+	 */
+	public static ComputingAlgorithmus[] computingServices = new ComputingAlgorithmus[InitializeParameter.NUMBER_OF_THREADS];
+
 }
