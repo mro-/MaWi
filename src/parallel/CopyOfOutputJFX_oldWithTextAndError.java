@@ -17,6 +17,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+@Deprecated
 public class CopyOfOutputJFX_oldWithTextAndError extends Application {
 
 	// 11 Farben (müssen insgesamt 11 sein!!!)
