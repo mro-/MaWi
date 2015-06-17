@@ -5,12 +5,12 @@ import javafx.scene.paint.Color;
 /**
  * Berechnung, die ein Thread durchführt. Quader wird in Scheiben geschnitten.
  */
-public class ComputingAlgorithmus implements Runnable {
+public class ComputingService implements Runnable {
 
 	private int xStart;
 	private int xEnd;
 
-	public ComputingAlgorithmus(int xStart, int xEnd) {
+	public ComputingService(int xStart, int xEnd) {
 		this.xStart = xStart;
 		this.xEnd = xEnd;
 	}

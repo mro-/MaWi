@@ -98,12 +98,12 @@ public class InitializeParameter {
 	 * Gibt die Anzahl der Threads an. Konfigurierbar für die Lesitungsmessung.
 	 */
 	public static final int NUMBER_OF_THREADS = 4;
-	
+
 	/**
-	 * Bezeichnet den Berechnugsmodus
-	 * 1: Konstante Temperatur der gesamten Fläche
-	 * 2: Wärmequelle in der Mitte der Fläche 
-	 * 3: Sinus
+	 * Festlegung der Hitzequelle der linken Seite<br>
+	 * 1: Konstante Temperatur der gesamten Fläche <br>
+	 * 2: Wärmequelle in der Mitte der Fläche <br>
+	 * 3: Sinusfunktion, Änderung im zeitlichen Verlauf
 	 */
 	public static final int HEAT_MODE = 1;
 

@@ -1,11 +1,6 @@
 package parallel;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
 import javafx.application.Application;
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
@@ -20,46 +15,66 @@ import javafx.stage.Stage;
  */
 public class OutputJFX extends Application {
 
+	private static PixelWriter pixelWriter;
+
 	public static void main(String[] args) {
 		Application.launch(args);
 	}
 
 	@Override
 	public void start(Stage primaryStage) {
+		// Ausgabefenster initialisieren
+		initializeOutputWindow(primaryStage);
+
+		// Initialisierung des Quaders
 		initializeQuader();
+
+		// Initialisierung des Farbarrays
+		initializeColorArray();
+
+		// Berechnungsservices anlegen
 		createComputingServices();
 
-		primaryStage.setTitle("Simulation Wärmediffusion");
-		BorderPane root = new BorderPane();
-		// TODO Scrollbar machen
-		// 20 Pixel Außenrand
-		Scene scene = new Scene(root, SharedVariables.QBR_2D + 20,
-				SharedVariables.QLR_2D + 20, Color.WHITE);
+		// Fläche einfärben
+		updatePixelInView();
 
-		// Image und dessen PixelWriter ist die performanteste Methode um in
-		// JavaFX Pixel darzustellen
-		ImageView imageView = new ImageView();
-		WritableImage image = new WritableImage(SharedVariables.QBR_2D,
-				SharedVariables.QLR_2D);
-		imageView.setImage(image);
-		PixelWriter pixelWriter = image.getPixelWriter();
+		// Ausgabefenster anzeigen
+		primaryStage.show();
 
-		// 1 Zelle wird als Quadrat von CELL_WIDTH Pixel visualisiert
-		// Initialisierung der Fläche
+		// Ausgabefenster aktualisieren
+		Task<Void> task = new MyJFXTask();
+		new Thread(task).start();
+	}
+
+	/**
+	 * Einfärbung der angezeigten Fläche, anhand der Farben des Color Arrays. <br>
+	 * 
+	 * 1 Zelle wird als Quadrat von CELL_WIDTH Pixel visualisiert
+	 */
+	public static void updatePixelInView() {
+		// Ausgabe, alle Felder berücksichtigen (inklusive Rand)
 		for (int x = 0; x < SharedVariables.QLR_2D; x = x
 				+ InitializeParameter.CELL_WIDTH) {
 			for (int y = 0; y < SharedVariables.QBR_2D; y = y
 					+ InitializeParameter.CELL_WIDTH) {
 
-				// Farbe berechnen
-				Color color = computeColor(SharedVariables.u1[x
+				// Farbe berechnen falls tempInColor Array
+				// nicht funktioniert
+				// float temperature;
+				// if (SharedVariables.isu1Base) {
+				// temperature = SharedVariables.u2[x / 4][y
+				// / 4][SharedVariables.Z_HALF];
+				// } else {
+				// temperature = SharedVariables.u1[x / 4][y
+				// / 4][SharedVariables.Z_HALF];
+				// }
+				// Color color = computeColor(temperature);
+
+				Color color = SharedVariables.tempInColor[x
 						/ InitializeParameter.CELL_WIDTH][y
-						/ InitializeParameter.CELL_WIDTH][SharedVariables.Z_HALF]);
+						/ InitializeParameter.CELL_WIDTH];
 
-				// Color Array initialisieren
-				SharedVariables.tempInColor[x / InitializeParameter.CELL_WIDTH][y
-						/ InitializeParameter.CELL_WIDTH] = color;
-
+				// und Pixel entsprechend der Zellgröße anpassen
 				// Zellen können mehrere Pixel groß sein
 				for (int i = x; i < x + InitializeParameter.CELL_WIDTH; i++) {
 					for (int j = y; j < y + InitializeParameter.CELL_WIDTH; j++) {
@@ -68,166 +83,6 @@ public class OutputJFX extends Application {
 						pixelWriter.setColor(j, i, color);
 					}
 				}
-
-			}
-		}
-
-		// // Farbskala ausgeben
-		// for (int i = 0; i < 11; i++) {
-		// Rectangle r = new Rectangle();
-		// r.setWidth(10);
-		// r.setHeight(10);
-		// r.setFill(SharedVariables.COLORS[i]);
-		// gridpane.add(r, i, InitializeParameter.QL + 3);
-		// }
-
-		root.setCenter(imageView);
-
-		primaryStage.setScene(scene);
-		primaryStage.show();
-
-		// Verfügbare Prozessoren
-		int numberOfProcessors = Runtime.getRuntime().availableProcessors();
-
-		Task<Void> task = new Task<Void>() {
-			@Override
-			public Void call() {
-				// Startzeit messen
-				long startTime = System.currentTimeMillis();
-
-				// Thread-Pooling
-				ThreadPoolExecutor executor = new ThreadPoolExecutor(
-						InitializeParameter.NUMBER_OF_THREADS,
-						InitializeParameter.NUMBER_OF_THREADS, 0,
-						TimeUnit.SECONDS, new ArrayBlockingQueue<>(100));
-
-				for (int n = 1; n <= InitializeParameter.N; n++) {
-					// Berechnung aller Quaderfelder (Rand wird nicht verändert)
-
-					createThreadsWithoutPool();
-
-					// TODO ThreadPooling
-					// for (int i = 0; i <
-					// InitializeParameter.NUMBER_OF_THREADS; i++) {
-					// executor.execute(SharedVariables.computingServices[i]);
-					// }
-					// try {
-					// executor.awaitTermination(1, TimeUnit.SECONDS);
-					// } catch (InterruptedException e) {
-					// // TODO Auto-generated catch block
-					// e.printStackTrace();
-					// }
-					// executor.shutdown();
-
-					//TODO linke Randtemperatur neu Setzen
-					updateRTL(n);
-					
-					
-					// Fläche neu einfärben
-					Platform.runLater(new Runnable() {
-
-						@Override
-						public void run() {
-							// ImageView imageView2 = (ImageView) root
-							// .getChildren().get(0);
-							// WritableImage image2 = (WritableImage) imageView2
-							// .getImage();
-							// PixelWriter pixelWriter2 =
-							// image2.getPixelWriter();
-
-							// Ausgabe, alle Felder berücksichtigen
-							// und Pixel entsprechend der Zellgröße anpassen
-							for (int x = 0; x < SharedVariables.QLR_2D; x = x
-									+ InitializeParameter.CELL_WIDTH) {
-								for (int y = 0; y < SharedVariables.QBR_2D; y = y
-										+ InitializeParameter.CELL_WIDTH) {
-
-									// Farbe berechnen falls tempInColor Array
-									// nicht funktioniert
-									// float temperature;
-									// if (SharedVariables.isu1Base) {
-									// temperature = SharedVariables.u2[x / 4][y
-									// / 4][SharedVariables.Z_HALF];
-									// } else {
-									// temperature = SharedVariables.u1[x / 4][y
-									// / 4][SharedVariables.Z_HALF];
-									// }
-									// Color color = computeColor(temperature);
-
-									Color color = SharedVariables.tempInColor[x
-											/ InitializeParameter.CELL_WIDTH][y
-											/ InitializeParameter.CELL_WIDTH];
-
-									for (int i = x; i < x
-											+ InitializeParameter.CELL_WIDTH; i++) {
-										for (int j = y; j < y
-												+ InitializeParameter.CELL_WIDTH; j++) {
-											pixelWriter.setColor(j, i, color);
-										}
-									}
-								}
-							}
-
-						}
-					});
-
-					// Merker setzen, welches Array die Ausgangslage für den
-					// nächsten Iterationsschritt enthält
-					if (SharedVariables.isu1Base) {
-						SharedVariables.isu1Base = false;
-					} else {
-						SharedVariables.isu1Base = true;
-					}
-				}
-				// Endzeit messen
-				long endTime = System.currentTimeMillis();
-				float time = (endTime - startTime) / 1000.0f;
-				System.out.println("Zeit: " + time);
-
-				return null;
-
-			}
-
-
-		};
-
-		new Thread(task).start();
-
-	}
-
-	private void updateRTL(int n) {
-		switch (InitializeParameter.HEAT_MODE) {
-		case 2:
-			for (int x = 0; x < SharedVariables.QLR; x++) {
-				for (int z = 0; z < SharedVariables.QBR; z++) {
-//					System.out.println("Before: " + SharedVariables.u2[x][0][z]);
-					SharedVariables.u1[x][0][z] = (float) (SharedVariables.u1[x][0][z] + Math.sin(n)*10);
-					SharedVariables.u2[x][0][z] = (float) (SharedVariables.u2[x][0][z] + Math.sin(n)*10);
-//					System.out.println(SharedVariables.u2[x][0][z]);
-				}
-			}
-		default:
-			break;
-		}
-	}
-	
-	/**
-	 * Erzeugt Threads ohne die Nutzung eines Thread-Poolings
-	 */
-	private void createThreadsWithoutPool() {
-		// Threads erzeugen
-		Thread[] threads = new Thread[InitializeParameter.NUMBER_OF_THREADS];
-		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
-			threads[i] = new Thread(SharedVariables.computingServices[i]);
-			threads[i].start();
-		}
-
-		// Synchronisation der Threads
-		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
-			try {
-				threads[i].join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
 			}
 		}
 	}
@@ -248,8 +103,8 @@ public class OutputJFX extends Application {
 			} else {
 				end = SharedVariables.QLR - 1;
 			}
-			SharedVariables.computingServices[i] = new ComputingAlgorithmus(
-					start, end);
+			SharedVariables.computingServices[i] = new ComputingService(start,
+					end);
 			start = end;
 		}
 	}
@@ -305,9 +160,10 @@ public class OutputJFX extends Application {
 
 						// Linke Seite mit Randtemperatur initialisieren
 					} else if (y == 0) {
-						SharedVariables.u1[x][y][z] = getTempForHeatMode(x, y);
-						SharedVariables.u2[x][y][z] = getTempForHeatMode(x, y);
-
+						SharedVariables.u1[x][y][z] = getTemperatureForHeatMode(
+								x, y);
+						SharedVariables.u2[x][y][z] = getTemperatureForHeatMode(
+								x, y);
 						// Untere Seite mit Randtemperatur initialisieren
 					} else if (z == 0) {
 						SharedVariables.u1[x][y][z] = InitializeParameter.RTU;
@@ -332,25 +188,69 @@ public class OutputJFX extends Application {
 	}
 
 	/**
-	 * Berechnet den Berechnugsmodus
-	 * 1: Konstante Temperatur der gesamten Fläche
-	 * 2: Wärmequelle in der Mitte der Fläche 
+	 * Initialisiert die linke Seite je nach Hitzequelle. <br>
+	 * 1: Konstante Temperatur der gesamten Fläche <br>
+	 * 2: Wärmequelle in der Mitte der Fläche <br>
 	 * 3: Sinus
-	 * @param y 
-	 * @param x 
 	 */
-	private float getTempForHeatMode(int x, int y) {
+	private float getTemperatureForHeatMode(int x, int y) {
 		switch (InitializeParameter.HEAT_MODE) {
 		case 1:
-			// Fläche entspricht ingesamt der RTL
+			// Fläche entspricht ingesamt der linken Randtemperatur
 			return InitializeParameter.RTL;
 		case 2:
 			// TODO Temperaturen über die Fläche hinweg berechnen
+			// Wärmequelle ist in der Mitte
 			break;
 		case 3:
-			// Fläche entspricht ingesamt der RTL
+			// Fläche entspricht ingesamt der linken Randtemperatur
 			return InitializeParameter.RTL;
 		}
 		return 0;
+	}
+
+	/**
+	 * Initialisierung des Farbarrays anhand der vorgegebenen
+	 * Initialisierungstemperaturen.
+	 */
+	private void initializeColorArray() {
+		for (int x = 0; x < SharedVariables.QLR_2D; x = x
+				+ InitializeParameter.CELL_WIDTH) {
+			for (int y = 0; y < SharedVariables.QBR_2D; y = y
+					+ InitializeParameter.CELL_WIDTH) {
+
+				// Farbe berechnen
+				Color color = computeColor(SharedVariables.u1[x
+						/ InitializeParameter.CELL_WIDTH][y
+						/ InitializeParameter.CELL_WIDTH][SharedVariables.Z_HALF]);
+
+				// Color Array initialisieren
+				SharedVariables.tempInColor[x / InitializeParameter.CELL_WIDTH][y
+						/ InitializeParameter.CELL_WIDTH] = color;
+			}
+		}
+	}
+
+	/**
+	 * Initialisiert das Ausgabefenster für die Simulation.
+	 */
+	private void initializeOutputWindow(Stage primaryStage) {
+		primaryStage.setTitle("Simulation Wärmediffusion");
+		BorderPane root = new BorderPane();
+		// TODO Scrollbar machen
+		// 20 Pixel Außenrand
+		Scene scene = new Scene(root, SharedVariables.QBR_2D + 20,
+				SharedVariables.QLR_2D + 20, Color.WHITE);
+
+		// Image und dessen PixelWriter ist die performanteste Methode um in
+		// JavaFX Pixel darzustellen
+		ImageView imageView = new ImageView();
+		WritableImage image = new WritableImage(SharedVariables.QBR_2D,
+				SharedVariables.QLR_2D);
+		imageView.setImage(image);
+		pixelWriter = image.getPixelWriter();
+
+		root.setCenter(imageView);
+		primaryStage.setScene(scene);
 	}
 }

@@ -1,10 +1,6 @@
 package parallel;
 
 
-public class ThreadControl implements Runnable {
+public class ThreadControl {
 
-	@Override
-	public void run() {
-
-	}
 }

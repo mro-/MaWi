@@ -1,7 +1,10 @@
-package parallel;
+package other;
 
 import java.text.DecimalFormat;
 
+import parallel.ComputingService;
+import parallel.InitializeParameter;
+import parallel.SharedVariables;
 import javafx.application.Application;
 import javafx.concurrent.Task;
 import javafx.geometry.Insets;
@@ -98,8 +101,8 @@ public class CopyOfOutputJFX_oldWithTextAndError extends Application {
 					// Thread t1 = new Thread(new ComputingAlgorithmus(1,
 					// SharedVariables.QLR - 1));
 
-					Thread t1 = new Thread(new ComputingAlgorithmus(1, 7 - 1));
-					Thread t2 = new Thread(new ComputingAlgorithmus(6,
+					Thread t1 = new Thread(new ComputingService(1, 7 - 1));
+					Thread t2 = new Thread(new ComputingService(6,
 							SharedVariables.QLR - 1));
 
 					// Platform.runLater(t1);

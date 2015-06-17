@@ -89,6 +89,6 @@ public class SharedVariables {
 	/**
 	 * Array, das die Berechnungsservices beinhaltet. (Aufteilung in Scheiben)
 	 */
-	public static ComputingAlgorithmus[] computingServices = new ComputingAlgorithmus[InitializeParameter.NUMBER_OF_THREADS];
+	public static ComputingService[] computingServices = new ComputingService[InitializeParameter.NUMBER_OF_THREADS];
 
 }
