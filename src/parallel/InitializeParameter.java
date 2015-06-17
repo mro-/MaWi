@@ -98,6 +98,14 @@ public class InitializeParameter {
 	 * Gibt die Anzahl der Threads an. Konfigurierbar für die Lesitungsmessung.
 	 */
 	public static final int NUMBER_OF_THREADS = 4;
+	
+	/**
+	 * Bezeichnet den Berechnugsmodus
+	 * 1: Konstante Temperatur der gesamten Fläche
+	 * 2: Wärmequelle in der Mitte der Fläche 
+	 * 3: Sinus
+	 */
+	public static final int HEAT_MODE = 1;
 
 	// /**
 	// * Werden die Threads mittels Threadpool verwaltet?

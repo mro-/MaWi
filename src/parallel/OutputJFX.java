@@ -119,6 +119,10 @@ public class OutputJFX extends Application {
 					// }
 					// executor.shutdown();
 
+					//TODO linke Randtemperatur neu Setzen
+					updateRTL(n);
+					
+					
 					// Fläche neu einfärben
 					Platform.runLater(new Runnable() {
 
@@ -184,12 +188,29 @@ public class OutputJFX extends Application {
 
 			}
 
+
 		};
 
 		new Thread(task).start();
 
 	}
 
+	private void updateRTL(int n) {
+		switch (InitializeParameter.HEAT_MODE) {
+		case 2:
+			for (int x = 0; x < SharedVariables.QLR; x++) {
+				for (int z = 0; z < SharedVariables.QBR; z++) {
+//					System.out.println("Before: " + SharedVariables.u2[x][0][z]);
+					SharedVariables.u1[x][0][z] = (float) (SharedVariables.u1[x][0][z] + Math.sin(n)*10);
+					SharedVariables.u2[x][0][z] = (float) (SharedVariables.u2[x][0][z] + Math.sin(n)*10);
+//					System.out.println(SharedVariables.u2[x][0][z]);
+				}
+			}
+		default:
+			break;
+		}
+	}
+	
 	/**
 	 * Erzeugt Threads ohne die Nutzung eines Thread-Poolings
 	 */
@@ -283,11 +304,9 @@ public class OutputJFX extends Application {
 						SharedVariables.u2[x][y][z] = InitializeParameter.RTR;
 
 						// Linke Seite mit Randtemperatur initialisieren
-						// (konstate Temperatur über die gesamte Seite)
-						// TODO weitere Aufgaben implementieren
 					} else if (y == 0) {
-						SharedVariables.u1[x][y][z] = InitializeParameter.RTL;
-						SharedVariables.u2[x][y][z] = InitializeParameter.RTL;
+						SharedVariables.u1[x][y][z] = getTempForHeatMode(x, y);
+						SharedVariables.u2[x][y][z] = getTempForHeatMode(x, y);
 
 						// Untere Seite mit Randtemperatur initialisieren
 					} else if (z == 0) {
@@ -310,5 +329,28 @@ public class OutputJFX extends Application {
 			}
 			// System.out.println();
 		}
+	}
+
+	/**
+	 * Berechnet den Berechnugsmodus
+	 * 1: Konstante Temperatur der gesamten Fläche
+	 * 2: Wärmequelle in der Mitte der Fläche 
+	 * 3: Sinus
+	 * @param y 
+	 * @param x 
+	 */
+	private float getTempForHeatMode(int x, int y) {
+		switch (InitializeParameter.HEAT_MODE) {
+		case 1:
+			// Fläche entspricht ingesamt der RTL
+			return InitializeParameter.RTL;
+		case 2:
+			// TODO Temperaturen über die Fläche hinweg berechnen
+			break;
+		case 3:
+			// Fläche entspricht ingesamt der RTL
+			return InitializeParameter.RTL;
+		}
+		return 0;
 	}
 }
