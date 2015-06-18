@@ -1,11 +1,12 @@
-package parallel;
+package backupparallel;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -41,8 +42,42 @@ public class OutputJFX extends Application {
 		primaryStage.show();
 
 		// Ausgabefenster aktualisieren
-		Thread mainThread = new Thread(new ControlUnit());
-		mainThread.start();
+		// Task<Void> task = new MyJFXTask();
+		// new Thread(task).start();
+
+		Thread t = new Thread(new Runnable() {
+			@Override
+			public void run() {
+
+				for (int n = 1; n <= InitializeParameter.N; n++) {
+					// Berechnung aller Quaderfelder (Rand wird nicht verändert)
+					createAndRunThreadsWithoutPool();
+
+					Platform.runLater(new Runnable() {
+						@Override
+						public void run() {
+							updatePixelInView();
+						}
+					});
+
+					// try {
+					// Thread.sleep(10);
+					// } catch (InterruptedException e) {
+					// // TODO Auto-generated catch block
+					// e.printStackTrace();
+					// }
+
+					// Merker setzen, welches Array die Ausgangslage für den
+					// nächsten Iterationsschritt enthält
+					if (SharedVariables.isu1Base) {
+						SharedVariables.isu1Base = false;
+					} else {
+						SharedVariables.isu1Base = true;
+					}
+				}
+			}
+		});
+		t.start();
 	}
 
 	/**
@@ -256,7 +291,7 @@ public class OutputJFX extends Application {
 	 */
 	private void initializeOutputWindow(Stage primaryStage) {
 		primaryStage.setTitle("Simulation Wärmediffusion");
-		BorderPane root = new BorderPane();
+		StackPane root = new StackPane();
 		// TODO Scrollbar machen
 		// 20 Pixel Außenrand
 		Scene scene = new Scene(root, SharedVariables.QBR_2D,
@@ -269,7 +304,7 @@ public class OutputJFX extends Application {
 				SharedVariables.QLR_2D);
 		imageView.setImage(image);
 		pixelWriter = image.getPixelWriter();
-		root.setCenter(imageView);
+		root.getChildren().add(imageView);
 		primaryStage.setScene(scene);
 	}
 }

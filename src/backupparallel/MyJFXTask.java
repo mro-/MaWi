@@ -1,10 +1,5 @@
-package parallel;
+package backupparallel;
 
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
-
-import javafx.application.Platform;
 import javafx.concurrent.Task;
 
 /**
@@ -23,10 +18,10 @@ public class MyJFXTask extends Task<Void> {
 		long startTime = System.currentTimeMillis();
 
 		// Thread-Pooling
-		ThreadPoolExecutor executor = new ThreadPoolExecutor(
-				InitializeParameter.NUMBER_OF_THREADS,
-				InitializeParameter.NUMBER_OF_THREADS, 0, TimeUnit.SECONDS,
-				new ArrayBlockingQueue<>(100));
+		// ThreadPoolExecutor executor = new ThreadPoolExecutor(
+		// InitializeParameter.NUMBER_OF_THREADS,
+		// InitializeParameter.NUMBER_OF_THREADS, 0, TimeUnit.SECONDS,
+		// new ArrayBlockingQueue<>(100));
 
 		for (int n = 1; n <= InitializeParameter.N; n++) {
 			// Berechnung aller Quaderfelder (Rand wird nicht verändert)
@@ -45,13 +40,14 @@ public class MyJFXTask extends Task<Void> {
 			// }
 			// executor.shutdown();
 
-			Platform.runLater(new Runnable() {
-				@Override
-				public void run() {
-					// Fläche neu einfärben
-					OutputJFX.updatePixelInView();
-				}
-			});
+			// Platform.runLater(new Runnable() {
+			// @Override
+			// public void run() {
+			// Fläche neu einfärben
+			// OutputJFX.updatePixelInView();
+			// }
+			// });
+			OutputJFX.updatePixelInView();
 
 			// Randtemperatur der linken Seite aktualisieren
 			if (InitializeParameter.HEAT_MODE == 3) {
