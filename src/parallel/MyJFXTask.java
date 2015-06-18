@@ -45,10 +45,10 @@ public class MyJFXTask extends Task<Void> {
 			// }
 			// executor.shutdown();
 
-			// Fläche neu einfärben
 			Platform.runLater(new Runnable() {
 				@Override
 				public void run() {
+					// Fläche neu einfärben
 					OutputJFX.updatePixelInView();
 				}
 			});

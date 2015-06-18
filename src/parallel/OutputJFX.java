@@ -6,7 +6,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
@@ -236,11 +236,11 @@ public class OutputJFX extends Application {
 	 */
 	private void initializeOutputWindow(Stage primaryStage) {
 		primaryStage.setTitle("Simulation Wärmediffusion");
-		BorderPane root = new BorderPane();
+		StackPane root = new StackPane();
 		// TODO Scrollbar machen
 		// 20 Pixel Außenrand
-		Scene scene = new Scene(root, SharedVariables.QBR_2D + 20,
-				SharedVariables.QLR_2D + 20, Color.WHITE);
+		Scene scene = new Scene(root, SharedVariables.QBR_2D,
+				SharedVariables.QLR_2D, Color.WHITE);
 
 		// Image und dessen PixelWriter ist die performanteste Methode um in
 		// JavaFX Pixel darzustellen
@@ -249,8 +249,7 @@ public class OutputJFX extends Application {
 				SharedVariables.QLR_2D);
 		imageView.setImage(image);
 		pixelWriter = image.getPixelWriter();
-
-		root.setCenter(imageView);
+		root.getChildren().add(imageView);
 		primaryStage.setScene(scene);
 	}
 }

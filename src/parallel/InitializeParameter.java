@@ -41,7 +41,7 @@ public class InitializeParameter {
 	/**
 	 * Anzahl der Iterationsschritte.
 	 */
-	public static final int N = 100;
+	public static final int N = 200;
 
 	/**
 	 * Randtemperatur der linken Quaderseite.
