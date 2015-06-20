@@ -65,8 +65,6 @@ public class ComputingService implements Runnable {
 	/**
 	 * Berechnung des Farbwertes und schreiben in das Array, das die Farbwerte
 	 * für die 2D Darstellung enthält. <br>
-	 * FIXME: Ich habe die Methode von private zu public static geändert, um aus
-	 * der ControlUnit darauf zugreifen zu können. Spricht was dagegen? <br>
 	 */
 	public static void computeAndSetColor(float temperature, int x, int y) {
 		// Temperatur auf 0-1 Skala mappen
