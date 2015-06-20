@@ -1,9 +1,17 @@
 package parallel;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import javafx.application.Platform;
 
 /**
- * Main Runnable, dass für die Aktuslierung des Ausgabefensters zuständig ist.
+ * Main Runnable, dass für die Aktualisierung des Ausgabefensters zuständig ist.
  * Alle weiteren Threads werden von hier angestoßen.
  */
 public class ControlUnit implements Runnable {
@@ -17,27 +25,24 @@ public class ControlUnit implements Runnable {
 		long startTime = System.currentTimeMillis();
 
 		// Thread-Pooling
-		// ThreadPoolExecutor executor = new ThreadPoolExecutor(
-		// InitializeParameter.NUMBER_OF_THREADS,
-		// InitializeParameter.NUMBER_OF_THREADS, 0, TimeUnit.SECONDS,
-		// new ArrayBlockingQueue<>(100));
+		ThreadPoolExecutor executor;
+		if (InitializeParameter.THREAD_POOL) {
+			executor = new ThreadPoolExecutor(numberOfProcessors,
+					InitializeParameter.NUMBER_OF_THREADS, 0, TimeUnit.SECONDS,
+					new ArrayBlockingQueue<>(
+							InitializeParameter.NUMBER_OF_THREADS));
+		}
 
+		// Iterationsschritte durchführen
 		for (int n = 1; n <= InitializeParameter.N; n++) {
 			// Berechnung aller Quaderfelder (Rand wird nicht verändert)
-			createAndRunThreadsWithoutPool();
-
-			// TODO ThreadPooling
-			// for (int i = 0; i <
-			// InitializeParameter.NUMBER_OF_THREADS; i++) {
-			// executor.execute(SharedVariables.computingServices[i]);
-			// }
-			// try {
-			// executor.awaitTermination(1, TimeUnit.SECONDS);
-			// } catch (InterruptedException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
-			// executor.shutdown();
+			if (InitializeParameter.THREAD_POOL) {
+				// Mittels Thread-Pool
+				createAndRunThreadsWithPool(executor);
+			} else {
+				// Mit einzelnen Threads
+				createAndRunThreadsWithoutPool();
+			}
 
 			// Fläche neu einfärben
 			Platform.runLater(new Runnable() {
@@ -69,13 +74,13 @@ public class ControlUnit implements Runnable {
 	}
 
 	/**
-	 * Erzeugt Threads ohne die Nutzung eines Thread-Poolings
+	 * Erzeugt Threads ohne die Nutzung eines Thread-Poolings.
 	 */
 	private void createAndRunThreadsWithoutPool() {
 		// Threads erzeugen
 		Thread[] threads = new Thread[InitializeParameter.NUMBER_OF_THREADS];
 		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
-			threads[i] = new Thread(SharedVariables.computingServices[i]);
+			threads[i] = new Thread(SharedVariables.computingRunnable[i]);
 			threads[i].start();
 		}
 
@@ -84,6 +89,25 @@ public class ControlUnit implements Runnable {
 			try {
 				threads[i].join();
 			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		}
+	}
+
+	/**
+	 * Erzeugt Threads mitteln Nutzung eines Thread-Pools.
+	 */
+	private void createAndRunThreadsWithPool(ThreadPoolExecutor executor) {
+		List<Future<Void>> futures = new ArrayList<Future<Void>>(
+				InitializeParameter.NUMBER_OF_THREADS);
+		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
+			futures.add(executor.submit(SharedVariables.computingCallable[i]));
+		}
+		for (Future<Void> future : futures) {
+			try {
+				future.get();
+			} catch (InterruptedException | ExecutionException e) {
+				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -104,13 +128,13 @@ public class ControlUnit implements Runnable {
 				if (SharedVariables.isu1Base) {
 					SharedVariables.u1[x][0][z] = (SharedVariables.u1[x][0][z] + Math
 							.round((float) Math.sin(n) * 100));
-					ComputingService.computeAndSetColor(
-							SharedVariables.u1[x][0][z], x, 0);
+					OutputJFX.computeAndSetColor(SharedVariables.u1[x][0][z],
+							x, 0);
 				} else {
 					SharedVariables.u2[x][0][z] = (SharedVariables.u2[x][0][z] + Math
 							.round((float) Math.sin(n) * 100));
-					ComputingService.computeAndSetColor(
-							SharedVariables.u2[x][0][z], x, 0);
+					OutputJFX.computeAndSetColor(SharedVariables.u2[x][0][z],
+							x, 0);
 				}
 			}
 		}

@@ -1,24 +1,16 @@
 package parallel;
 
-import javafx.scene.paint.Color;
-
 /**
- * Berechnung, die ein Thread durchführt. Quader wird in Scheiben geschnitten.
+ * Auslagerung der Berechnungsfunktion für die Wärmediffusion. Quader wird in
+ * Scheiben geschnitten.
+ *
  */
-public class ComputingService implements Runnable {
+public class ComputingService {
 
-	private int xStart;
-
-	private int xEnd;
-
-	public ComputingService(int xStart, int xEnd) {
-		this.xStart = xStart;
-		this.xEnd = xEnd;
-	}
-
-	@Override
-	public void run() {
-		// Berechnung der Quaderfelder im entsprechenden Abschnitt
+	/**
+	 * Berechnung der Quaderfelder im entsprechenden Abschnitt des Quaders.
+	 */
+	public static void compute(int xStart, int xEnd) {
 		float newTemperature;
 		float oldTemperature;
 
@@ -54,38 +46,11 @@ public class ComputingService implements Runnable {
 					// werden für alle Zellen
 					if (z == SharedVariables.Z_HALF
 							&& newTemperature != oldTemperature) {
-						computeAndSetColor(newTemperature, x, y);
+						OutputJFX.computeAndSetColor(newTemperature, x, y);
 					}
 				}
 			}
 		}
-
 	}
 
-	/**
-	 * Berechnung des Farbwertes und schreiben in das Array, das die Farbwerte
-	 * für die 2D Darstellung enthält. <br>
-	 * FIXME: Ich habe die Methode von private zu public static geändert, um aus
-	 * der ControlUnit darauf zugreifen zu können. Spricht was dagegen? <br>
-	 */
-	public static void computeAndSetColor(float temperature, int x, int y) {
-		// Temperatur auf 0-1 Skala mappen
-		// (value-min)/(max-min)
-		float mappedTemperatureF = (temperature - InitializeParameter.MIN_TEMP)
-				/ (InitializeParameter.MAX_TEMP - InitializeParameter.MIN_TEMP);
-		mappedTemperatureF = (mappedTemperatureF < 0) ? 0
-				: ((mappedTemperatureF > 1) ? 1 : mappedTemperatureF);
-
-		// Mappen auf 0-10 Skala
-		int mappedTemperatureI = Math.round(mappedTemperatureF * 10);
-
-		SharedVariables.tempInColor[x][y] = SharedVariables.COLORS[mappedTemperatureI];
-	}
-
-	/**
-	 * Alternative Farbberechnung (fließender Übergang)
-	 */
-	private void computeAndSetColor2(float temperature, int x, int y) {
-		SharedVariables.tempInColor[x][y] = Color.hsb(temperature, 1, 1);
-	}
 }

@@ -114,9 +114,10 @@ public class InitializeParameter {
 	 */
 	public static final int CENTRE_SIZE = 10;
 
-	// /**
-	// * Werden die Threads mittels Threadpool verwaltet?
-	// */
-	// public static final boolean THREAD_POOL = true;
+	/**
+	 * Werden die Threads mittels Threadpool verwaltet? Bei false werden immer
+	 * neue Threads angelegt.
+	 */
+	public static final boolean THREAD_POOL = true;
 
 }

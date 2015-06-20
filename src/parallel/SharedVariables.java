@@ -90,8 +90,15 @@ public class SharedVariables {
 	public static Color[][] tempInColor = new Color[QLR][QBR];
 
 	/**
-	 * Array, das die Berechnungsservices beinhaltet. (Aufteilung in Scheiben)
+	 * Array, das die Berechnungsservices beinhaltet. Berechnung erfolgt mit
+	 * immer neu angelegten Threads. (Aufteilung in Scheiben)
 	 */
-	public static ComputingService[] computingServices = new ComputingService[InitializeParameter.NUMBER_OF_THREADS];
+	public static ComputingRunnable[] computingRunnable = new ComputingRunnable[InitializeParameter.NUMBER_OF_THREADS];
+
+	/**
+	 * Array, das die Berechnungsservices beinhaltet. Berechnung erfolgt mit
+	 * einem Threadpool. (Aufteilung in Scheiben)
+	 */
+	public static ComputingCallable[] computingCallable = new ComputingCallable[InitializeParameter.NUMBER_OF_THREADS];
 
 }

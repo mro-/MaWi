@@ -87,6 +87,33 @@ public class OutputJFX extends Application {
 	}
 
 	/**
+	 * Berechnung des Farbwertes und schreiben in das Array, das die Farbwerte
+	 * für die 2D Darstellung enthält. <br>
+	 * FIXME: Ich habe die Methode von private zu public static geändert, um aus
+	 * der ControlUnit darauf zugreifen zu können. Spricht was dagegen? <br>
+	 */
+	public static void computeAndSetColor(float temperature, int x, int y) {
+		// Temperatur auf 0-1 Skala mappen
+		// (value-min)/(max-min)
+		float mappedTemperatureF = (temperature - InitializeParameter.MIN_TEMP)
+				/ (InitializeParameter.MAX_TEMP - InitializeParameter.MIN_TEMP);
+		mappedTemperatureF = (mappedTemperatureF < 0) ? 0
+				: ((mappedTemperatureF > 1) ? 1 : mappedTemperatureF);
+
+		// Mappen auf 0-10 Skala
+		int mappedTemperatureI = Math.round(mappedTemperatureF * 10);
+
+		SharedVariables.tempInColor[x][y] = SharedVariables.COLORS[mappedTemperatureI];
+	}
+
+	/**
+	 * Alternative Farbberechnung (fließender Übergang)
+	 */
+	private void computeAndSetColor2(float temperature, int x, int y) {
+		SharedVariables.tempInColor[x][y] = Color.hsb(temperature, 1, 1);
+	}
+
+	/**
 	 * Erzeugt die Berechnungsservices und teilt dazu den Quader in Scheiben
 	 * auf.
 	 */
@@ -102,8 +129,14 @@ public class OutputJFX extends Application {
 			} else {
 				end = SharedVariables.QLR - 1;
 			}
-			SharedVariables.computingServices[i] = new ComputingService(start,
-					end);
+			// Je nach Threaderzeugung initialisieren
+			if (InitializeParameter.THREAD_POOL) {
+				SharedVariables.computingCallable[i] = new ComputingCallable(
+						start, end);
+			} else {
+				SharedVariables.computingRunnable[i] = new ComputingRunnable(
+						start, end);
+			}
 			start = end;
 		}
 	}
@@ -228,7 +261,7 @@ public class OutputJFX extends Application {
 				float temperature = SharedVariables.u1[xCell][yCell][SharedVariables.Z_HALF];
 
 				// Color Array initialisieren
-				ComputingService.computeAndSetColor(temperature, xCell, yCell);
+				computeAndSetColor(temperature, xCell, yCell);
 			}
 		}
 	}
