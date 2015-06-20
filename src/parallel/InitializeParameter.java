@@ -46,7 +46,7 @@ public class InitializeParameter {
 	/**
 	 * Randtemperatur der linken Quaderseite.
 	 */
-	public static final float RTL = 60;
+	public static final float RTL = 100;
 
 	/**
 	 * Randtemperatur der rechten Quaderseite.
@@ -105,7 +105,7 @@ public class InitializeParameter {
 	 * 2: Wärmequelle in der Mitte der Fläche <br>
 	 * 3: Sinusfunktion, Änderung im zeitlichen Verlauf
 	 */
-	public static final int HEAT_MODE = 3;
+	public static final int HEAT_MODE = 1;
 
 	/**
 	 * Anzahl der Zellen im Ausgangsarray, die das Zentrum der Wärmequelle

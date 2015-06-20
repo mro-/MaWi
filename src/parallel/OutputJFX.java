@@ -46,27 +46,6 @@ public class OutputJFX extends Application {
 	}
 
 	/**
-	 * Erzeugt Threads ohne die Nutzung eines Thread-Poolings
-	 */
-	private void createAndRunThreadsWithoutPool() {
-		// Threads erzeugen
-		Thread[] threads = new Thread[InitializeParameter.NUMBER_OF_THREADS];
-		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
-			threads[i] = new Thread(SharedVariables.computingServices[i]);
-			threads[i].start();
-		}
-
-		// Synchronisation der Threads
-		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
-			try {
-				threads[i].join();
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	/**
 	 * Einfärbung der angezeigten Fläche, anhand der Farben des Color Arrays. <br>
 	 * 
 	 * 1 Zelle wird als Quadrat von CELL_WIDTH Pixel visualisiert
@@ -127,32 +106,6 @@ public class OutputJFX extends Application {
 					end);
 			start = end;
 		}
-	}
-
-	/**
-	 * Berechnung des Farbwertes
-	 */
-	private Color computeColor(float temperature) {
-		// Temperatur auf 0-1 Skala mappen
-		// (value-min)/(max-min)
-		float mappedTemperatureF = (temperature - InitializeParameter.MIN_TEMP)
-				/ (InitializeParameter.MAX_TEMP - InitializeParameter.MIN_TEMP);
-		mappedTemperatureF = (mappedTemperatureF < 0) ? 0
-				: ((mappedTemperatureF > 1) ? 1 : mappedTemperatureF);
-
-		// Mappen auf 0-10 Skala
-		int mappedTemperatureI = Math.round(mappedTemperatureF * 10);
-
-		return SharedVariables.COLORS[mappedTemperatureI];
-	}
-
-	/**
-	 * Alternative Farbberechnung (fließender Übergang)
-	 */
-	private Color computeColor2(float temperature) {
-		// 0-240
-		// Farben von 0-360 verfügbar
-		return Color.hsb(temperature, 1, 1);
 	}
 
 	/**
@@ -220,6 +173,7 @@ public class OutputJFX extends Application {
 	 */
 	private void updateRTlinksForCentralHeatMode() {
 		// Ungerade Werte werden hier autoamtisch aufgerundet
+		// TODO SharedVariables.Z_HALF könnte man auch nehmen
 		int adaptedZHalf = Math.round(SharedVariables.QHR / 2);
 		int adaptedXHalf = Math.round(SharedVariables.QLR / 2);
 
@@ -267,14 +221,14 @@ public class OutputJFX extends Application {
 			for (int y = 0; y < SharedVariables.QBR_2D; y = y
 					+ InitializeParameter.CELL_WIDTH) {
 
-				// Farbe berechnen
-				Color color = computeColor(SharedVariables.u1[x
-						/ InitializeParameter.CELL_WIDTH][y
-						/ InitializeParameter.CELL_WIDTH][SharedVariables.Z_HALF]);
+				// Auf x und y Quaderzellen runterrechnen
+				int xCell = x / InitializeParameter.CELL_WIDTH;
+				int yCell = y / InitializeParameter.CELL_WIDTH;
+
+				float temperature = SharedVariables.u1[xCell][yCell][SharedVariables.Z_HALF];
 
 				// Color Array initialisieren
-				SharedVariables.tempInColor[x / InitializeParameter.CELL_WIDTH][y
-						/ InitializeParameter.CELL_WIDTH] = color;
+				ComputingService.computeAndSetColor(temperature, xCell, yCell);
 			}
 		}
 	}
