@@ -3,8 +3,10 @@ package parallel;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
+import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
@@ -46,19 +48,20 @@ public class ControlUnit implements Runnable {
 			}
 
 			// Fläche neu einfärben
-			Platform.runLater(new Runnable() {
-
-				@Override
-				public void run() {
-					OutputJFX.updatePixelInView();
-				}
-			});
-
-			// FIXME rauswerfen, nur zur besseren Visualisierung
+			final FutureTask<Void> updateOutputWindowTask = new FutureTask<Void>(
+					new Callable() {
+						@Override
+						public Void call() throws Exception {
+							OutputJFX.updatePixelInView();
+							return null;
+						}
+					});
+			Platform.runLater(updateOutputWindowTask);
+			// Warten bis zeichnen fertig ist und erst dann weiter machen
 			try {
-				Thread.sleep(20);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
+				updateOutputWindowTask.get();
+			} catch (InterruptedException | ExecutionException e1) {
+				e1.printStackTrace();
 			}
 
 			// Merker setzen, welches Array die Ausgangslage für den
