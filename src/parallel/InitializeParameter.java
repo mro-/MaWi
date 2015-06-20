@@ -41,12 +41,12 @@ public class InitializeParameter {
 	/**
 	 * Anzahl der Iterationsschritte.
 	 */
-	public static final int N = 300;
+	public static final int N = 200;
 
 	/**
 	 * Randtemperatur der linken Quaderseite.
 	 */
-	public static final float RTL = 100;
+	public static final float RTL = 50;
 
 	/**
 	 * Randtemperatur der rechten Quaderseite.
@@ -105,7 +105,7 @@ public class InitializeParameter {
 	 * 2: Wärmequelle in der Mitte der Fläche <br>
 	 * 3: Sinusfunktion, Änderung im zeitlichen Verlauf
 	 */
-	public static final int HEAT_MODE = 1;
+	public static final int HEAT_MODE = 3;
 
 	/**
 	 * Anzahl der Zellen im Ausgangsarray, die das Zentrum der Wärmequelle
@@ -118,6 +118,6 @@ public class InitializeParameter {
 	 * Werden die Threads mittels Threadpool verwaltet? Bei false werden immer
 	 * neue Threads angelegt.
 	 */
-	public static final boolean THREAD_POOL = true;
+	public static final boolean THREAD_POOL = false;
 
 }

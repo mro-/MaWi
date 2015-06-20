@@ -27,7 +27,8 @@ public class ControlUnit implements Runnable {
 		// Thread-Pooling
 		ThreadPoolExecutor executor;
 		if (InitializeParameter.THREAD_POOL) {
-			executor = new ThreadPoolExecutor(numberOfProcessors,
+			executor = new ThreadPoolExecutor(
+					InitializeParameter.NUMBER_OF_THREADS,
 					InitializeParameter.NUMBER_OF_THREADS, 0, TimeUnit.SECONDS,
 					new ArrayBlockingQueue<>(
 							InitializeParameter.NUMBER_OF_THREADS));
@@ -53,9 +54,11 @@ public class ControlUnit implements Runnable {
 				}
 			});
 
-			// Randtemperatur der linken Seite aktualisieren
-			if (InitializeParameter.HEAT_MODE == 3) {
-				updateRTLSinus(n);
+			// FIXME rauswerfen, nur zur besseren Visualisierung
+			try {
+				Thread.sleep(20);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
 			}
 
 			// Merker setzen, welches Array die Ausgangslage für den
@@ -64,6 +67,11 @@ public class ControlUnit implements Runnable {
 				SharedVariables.isu1Base = false;
 			} else {
 				SharedVariables.isu1Base = true;
+			}
+
+			// Randtemperatur der linken Seite aktualisieren
+			if (InitializeParameter.HEAT_MODE == 3) {
+				updateRTLSinus(n);
 			}
 		}
 		// Endzeit messen
@@ -100,14 +108,16 @@ public class ControlUnit implements Runnable {
 	private void createAndRunThreadsWithPool(ThreadPoolExecutor executor) {
 		List<Future<Void>> futures = new ArrayList<Future<Void>>(
 				InitializeParameter.NUMBER_OF_THREADS);
+		// threads aus Thread-Pool starten
 		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
 			futures.add(executor.submit(SharedVariables.computingCallable[i]));
 		}
+		// Nötig, damit erst weiter gemacht wird wenn alle Threads fertig sein
+		// (join).
 		for (Future<Void> future : futures) {
 			try {
 				future.get();
 			} catch (InterruptedException | ExecutionException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -121,25 +131,33 @@ public class ControlUnit implements Runnable {
 	 * 
 	 */
 	private void updateRTLSinus(int n) {
-		if (SharedVariables.isu1Base) {
-			float temp = SharedVariables.u2[SharedVariables.QLR / 2][0][SharedVariables.QHR / 2]
-					+ Math.round((float) Math.sin(n) * 100);
+		// n als double, damit mit ANchkommastellen gerechnet wird
+		double sinusvalue = ((double) n) / 3;
+		// Berechnung der Temeratur mittels Sinus, Temperatur schwankt um die
+		// angegebenene Ausgangstemperatur der linken Seite
+		float newSinusTemperature = (float) ((Math.sin(sinusvalue) * 100) + InitializeParameter.RTL);
 
+		// Neue Temperatur im Quader der linken Seite zuordnen
+		if (SharedVariables.isu1Base) {
 			for (int x = 1; x < SharedVariables.QLR - 1; x++) {
 				for (int z = 1; z < SharedVariables.QBR - 1; z++) {
-					SharedVariables.u1[x][0][z] = temp;
+					SharedVariables.u1[x][0][z] = newSinusTemperature;
 				}
 			}
 		} else {
-			float temp = SharedVariables.u1[SharedVariables.QLR / 2][0][SharedVariables.QHR / 2]
-					+ Math.round((float) Math.sin(n) * 100);
-
-			System.out.println(temp);
 			for (int x = 1; x < SharedVariables.QLR - 1; x++) {
 				for (int z = 1; z < SharedVariables.QBR - 1; z++) {
-					SharedVariables.u2[x][0][z] = temp;
+					SharedVariables.u2[x][0][z] = newSinusTemperature;
 				}
 			}
+		}
+
+		// TODO Ausgabe löschen
+		System.out.println(newSinusTemperature);
+
+		// Color Array: linke Seite updaten
+		for (int x = 1; x < SharedVariables.QLR - 1; x++) {
+			OutputJFX.computeAndSetColor(newSinusTemperature, x, 0);
 		}
 	}
 }
