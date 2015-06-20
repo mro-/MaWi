@@ -8,6 +8,7 @@ import javafx.scene.paint.Color;
 public class ComputingService implements Runnable {
 
 	private int xStart;
+
 	private int xEnd;
 
 	public ComputingService(int xStart, int xEnd) {
@@ -20,6 +21,7 @@ public class ComputingService implements Runnable {
 		// Berechnung der Quaderfelder im entsprechenden Abschnitt
 		float newTemperature;
 		float oldTemperature;
+
 		for (int x = xStart; x < xEnd; x++) {
 			for (int y = 1; y < SharedVariables.QBR - 1; y++) {
 				for (int z = 1; z < SharedVariables.QHR - 1; z++) {
@@ -62,9 +64,11 @@ public class ComputingService implements Runnable {
 
 	/**
 	 * Berechnung des Farbwertes und schreiben in das Array, das die Farbwerte
-	 * für die 2D Darstellung enthält.
+	 * für die 2D Darstellung enthält. <br>
+	 * FIXME: Ich habe die Methode von private zu public static geändert, um aus
+	 * der ControlUnit darauf zugreifen zu können. Spricht was dagegen? <br>
 	 */
-	private void computeAndSetColor(float temperature, int x, int y) {
+	public static void computeAndSetColor(float temperature, int x, int y) {
 		// Temperatur auf 0-1 Skala mappen
 		// (value-min)/(max-min)
 		float mappedTemperatureF = (temperature - InitializeParameter.MIN_TEMP)

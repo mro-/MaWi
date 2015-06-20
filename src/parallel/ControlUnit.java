@@ -3,7 +3,7 @@ package parallel;
 import javafx.application.Platform;
 
 /**
- * Main Runnable, dass für die Aktuslierung des Ausgebefensters zuständig ist.
+ * Main Runnable, dass für die Aktuslierung des Ausgabefensters zuständig ist.
  * Alle weiteren Threads werden von hier angestoßen.
  */
 public class ControlUnit implements Runnable {
@@ -41,18 +41,12 @@ public class ControlUnit implements Runnable {
 
 			// Fläche neu einfärben
 			Platform.runLater(new Runnable() {
+
 				@Override
 				public void run() {
 					OutputJFX.updatePixelInView();
 				}
 			});
-
-			// try {
-			// Thread.sleep(10);
-			// } catch (InterruptedException e) {
-			// // TODO Auto-generated catch block
-			// e.printStackTrace();
-			// }
 
 			// Randtemperatur der linken Seite aktualisieren
 			if (InitializeParameter.HEAT_MODE == 3) {
@@ -96,22 +90,36 @@ public class ControlUnit implements Runnable {
 	}
 
 	/**
-	 * Aktualisiert die Temperaturen der linken Seite gemäß der Sinusfunktion.
+	 * Aktualisiert die Temperaturen der linken Seite gemäß der Sinusfunktion. <br>
+	 * FIXME: Kann hier nicht auch mit Array-Referenzen gearbeitet werden, um
+	 * nicht immer auf isu1Base abzufragen und den Körper nur für ein Array
+	 * ausprogrammieren zu müssen? Nur als Idee <br>
+	 * FIXME Prüfen: Temperatur für eine Zelle berechnen und dann auf alle
+	 * Zellen anwenden. Müsste ja über die Fäche konstant sein
+	 * 
 	 */
 	private void updateRTLSinus(int n) {
-		for (int x = 0; x < SharedVariables.QLR; x++) {
-			for (int z = 0; z < SharedVariables.QBR; z++) {
-				// System.out.println("Before: " +
-				// SharedVariables.u2[x][0][z]);
-				// TODO SharedVariables.isu1Base muss abgefragt werden
-				SharedVariables.u1[x][0][z] = (float) (SharedVariables.u1[x][0][z] + Math
-						.sin(n) * 10);
-				SharedVariables.u2[x][0][z] = (float) (SharedVariables.u2[x][0][z] + Math
-						.sin(n) * 10);
-				// System.out.println(SharedVariables.u2[x][0][z]);
+		for (int x = 1; x < SharedVariables.QLR - 1; x++) {
+			for (int z = 1; z < SharedVariables.QBR - 1; z++) {
+				if (SharedVariables.isu1Base) {
+					SharedVariables.u1[x][0][z] = (SharedVariables.u1[x][0][z] + Math
+							.round((float) Math.sin(n) * 100));
+					ComputingService.computeAndSetColor(
+							SharedVariables.u1[x][0][z], x, 0);
+				} else {
+					SharedVariables.u2[x][0][z] = (SharedVariables.u2[x][0][z] + Math
+							.round((float) Math.sin(n) * 100));
+					ComputingService.computeAndSetColor(
+							SharedVariables.u2[x][0][z], x, 0);
+				}
 			}
 		}
-		// TODO ColorArray für die Werte neu berechnen
+		// System.out.println(SharedVariables.u2[5][0][5]);
+		// FIXME Für eine Spalte werden die Werte nicht korrekt dargestellt,
+		// wenn man als Ausgangstemparatur für RTL
+		// niedrige Temparaturen berechnet. Evtl. eine Optimierung vornehmen,
+		// dass die Farben des gesamten Arrays
+		// gebündelt neu berechnet werden und nicht für jedes Feld einzeln
 	}
 
 }

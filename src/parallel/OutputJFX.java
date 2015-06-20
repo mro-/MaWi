@@ -157,8 +157,11 @@ public class OutputJFX extends Application {
 
 	/**
 	 * Initialiserung des Quaders mit Randtemperaturen und Starttemperatur.
+	 * FIXME: Für die zentrale Wärmequelle müssen hier alle Randtemparaturen
+	 * noch gleichgesetzt werden
 	 */
 	public void initializeQuader() {
+
 		for (int x = 0; x < SharedVariables.QLR; x++) {
 			for (int y = 0; y < SharedVariables.QBR; y++) {
 				for (int z = 0; z < SharedVariables.QHR; z++) {
@@ -181,9 +184,9 @@ public class OutputJFX extends Application {
 						// Linke Seite mit Randtemperatur initialisieren
 					} else if (y == 0) {
 						SharedVariables.u1[x][y][z] = getTemperatureForHeatMode(
-								x, y);
+								x, z);
 						SharedVariables.u2[x][y][z] = getTemperatureForHeatMode(
-								x, y);
+								x, z);
 						// Untere Seite mit Randtemperatur initialisieren
 					} else if (z == 0) {
 						SharedVariables.u1[x][y][z] = InitializeParameter.RTU;
@@ -205,6 +208,32 @@ public class OutputJFX extends Application {
 			}
 			// System.out.println();
 		}
+
+		switch (InitializeParameter.HEAT_MODE) {
+		case 2:
+			updateRTlinksForCentralHeatMode();
+		}
+	}
+
+	/**
+	 * Berechnung der Randtemperaturen bei zentraler Wärmequelle
+	 */
+	private void updateRTlinksForCentralHeatMode() {
+		// Ungerade Werte werden hier autoamtisch aufgerundet
+		int adaptedZHalf = Math.round(SharedVariables.QHR / 2);
+		int adaptedXHalf = Math.round(SharedVariables.QLR / 2);
+
+		if (adaptedZHalf > InitializeParameter.CENTRE_SIZE
+				&& adaptedXHalf > InitializeParameter.CENTRE_SIZE) {
+			for (int x = adaptedXHalf - InitializeParameter.CENTRE_SIZE; x < adaptedXHalf
+					+ InitializeParameter.CENTRE_SIZE; x++) {
+				for (int z = adaptedZHalf - InitializeParameter.CENTRE_SIZE; z < adaptedZHalf
+						+ InitializeParameter.CENTRE_SIZE; z++) {
+					SharedVariables.u2[x][0][z] = InitializeParameter.RTL;
+					SharedVariables.u1[x][0][z] = InitializeParameter.RTL;
+				}
+			}
+		}
 	}
 
 	/**
@@ -213,15 +242,14 @@ public class OutputJFX extends Application {
 	 * 2: Wärmequelle in der Mitte der Fläche <br>
 	 * 3: Sinus
 	 */
-	private float getTemperatureForHeatMode(int x, int y) {
+	private float getTemperatureForHeatMode(int x, int z) {
 		switch (InitializeParameter.HEAT_MODE) {
 		case 1:
 			// Fläche entspricht ingesamt der linken Randtemperatur
 			return InitializeParameter.RTL;
 		case 2:
-			// TODO Temperaturen über die Fläche hinweg berechnen
 			// Wärmequelle ist in der Mitte
-			break;
+			return InitializeParameter.TS;
 		case 3:
 			// Fläche entspricht ingesamt der linken Randtemperatur
 			return InitializeParameter.RTL;

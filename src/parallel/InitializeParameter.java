@@ -6,22 +6,22 @@ package parallel;
 public class InitializeParameter {
 
 	/**
-	 * Physikalische Ausdehnung des Quaders, in der Länge (Angabe in Anzahl der
-	 * Zellen, Wert >> 1).
+	 * X: Physikalische Ausdehnung des Quaders, in der Länge (Angabe in Anzahl
+	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QL = 100;
+	public static final int QL = 98;
 
 	/**
-	 * Physikalische Ausdehnung des Quaders, in der Breite (Angabe in Anzahl der
-	 * Zellen, Wert >> 1).
+	 * Y: Physikalische Ausdehnung des Quaders, in der Breite (Angabe in Anzahl
+	 * der Zellen, Wert >> 1).
 	 */
 	public static final int QB = 100;
 
 	/**
-	 * Physikalische Ausdehnung des Quaders, in der Höhe (Angabe in Anzahl der
-	 * Zellen, Wert >> 1).
+	 * Z: Physikalische Ausdehnung des Quaders, in der Höhe (Angabe in Anzahl
+	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QH = 100;
+	public static final int QH = 99;
 
 	/**
 	 * Kantenlänge des finiten Elementes (einer Zelle).
@@ -41,12 +41,12 @@ public class InitializeParameter {
 	/**
 	 * Anzahl der Iterationsschritte.
 	 */
-	public static final int N = 200;
+	public static final int N = 300;
 
 	/**
 	 * Randtemperatur der linken Quaderseite.
 	 */
-	public static final float RTL = 100;
+	public static final float RTL = 60;
 
 	/**
 	 * Randtemperatur der rechten Quaderseite.
@@ -105,7 +105,14 @@ public class InitializeParameter {
 	 * 2: Wärmequelle in der Mitte der Fläche <br>
 	 * 3: Sinusfunktion, Änderung im zeitlichen Verlauf
 	 */
-	public static final int HEAT_MODE = 1;
+	public static final int HEAT_MODE = 3;
+
+	/**
+	 * Anzahl der Zellen im Ausgangsarray, die das Zentrum der Wärmequelle
+	 * bilden. <br>
+	 * != Anzahl der pro Zelle angezeigten Pixel!
+	 */
+	public static final int CENTRE_SIZE = 10;
 
 	// /**
 	// * Werden die Threads mittels Threadpool verwaltet?
