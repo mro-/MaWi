@@ -36,6 +36,12 @@ public class SharedVariables {
 	public static final int Z_HALF = SharedVariables.QHR / 2;
 
 	/**
+	 * X-Wert bei dem der Quaderquerschnitt stattfindet. <br>
+	 * Ungerade Werte werden automatisch aufgerundet
+	 */
+	public static final int X_HALF = SharedVariables.QLR / 2;
+
+	/**
 	 * Länge der 2D Fläche zur Visualisierung.
 	 */
 	public static final int QLR_2D = SharedVariables.QLR
