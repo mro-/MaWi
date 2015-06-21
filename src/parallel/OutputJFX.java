@@ -89,8 +89,6 @@ public class OutputJFX extends Application {
 	/**
 	 * Berechnung des Farbwertes und schreiben in das Array, das die Farbwerte
 	 * für die 2D Darstellung enthält. <br>
-	 * FIXME: Ich habe die Methode von private zu public static geändert, um aus
-	 * der ControlUnit darauf zugreifen zu können. Spricht was dagegen? <br>
 	 */
 	public static void computeAndSetColor(float temperature, int x, int y) {
 		// Temperatur auf 0-1 Skala mappen
@@ -103,7 +101,11 @@ public class OutputJFX extends Application {
 		// Mappen auf 0-10 Skala
 		int mappedTemperatureI = Math.round(mappedTemperatureF * 10);
 
-		SharedVariables.tempInColor[x][y] = SharedVariables.COLORS[mappedTemperatureI];
+		// synchronized Block eingetlich nicht nötig, da nicht in gleiche Felder
+		// geschrieben wird und das lesen erst nach dem Schreiben stattfindet.
+		synchronized (SharedVariables.tempInColor) {
+			SharedVariables.tempInColor[x][y] = SharedVariables.COLORS[mappedTemperatureI];
+		}
 	}
 
 	/**
