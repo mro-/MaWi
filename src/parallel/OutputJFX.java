@@ -123,10 +123,10 @@ public class OutputJFX extends Application {
 		int start = 1;
 		int end;
 		int dataRangeQL = SharedVariables.QLR
-				/ InitializeParameter.NUMBER_OF_THREADS;
-		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
+				/ InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL;
+		for (int i = 0; i < InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL; i++) {
 			// Automatische Aufteilung der Daten (in Scheiben)
-			if (i < InitializeParameter.NUMBER_OF_THREADS - 1) {
+			if (i < InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL - 1) {
 				end = start + dataRangeQL;
 			} else {
 				end = SharedVariables.QLR - 1;

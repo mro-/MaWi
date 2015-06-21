@@ -93,12 +93,12 @@ public class SharedVariables {
 	 * Array, das die Berechnungsservices beinhaltet. Berechnung erfolgt mit
 	 * immer neu angelegten Threads. (Aufteilung in Scheiben)
 	 */
-	public static ComputingRunnable[] computingRunnable = new ComputingRunnable[InitializeParameter.NUMBER_OF_THREADS];
+	public static ComputingRunnable[] computingRunnable = new ComputingRunnable[InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL];
 
 	/**
 	 * Array, das die Berechnungsservices beinhaltet. Berechnung erfolgt mit
 	 * einem Threadpool. (Aufteilung in Scheiben)
 	 */
-	public static ComputingCallable[] computingCallable = new ComputingCallable[InitializeParameter.NUMBER_OF_THREADS];
+	public static ComputingCallable[] computingCallable = new ComputingCallable[InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL];
 
 }

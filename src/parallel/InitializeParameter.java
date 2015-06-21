@@ -95,9 +95,24 @@ public class InitializeParameter {
 	public static final int CELL_WIDTH = 4;
 
 	/**
-	 * Gibt die Anzahl der Threads an. Konfigurierbar für die Lesitungsmessung.
+	 * Werden die Threads mittels Threadpool verwaltet? Bei false werden immer
+	 * neue Threads angelegt.
+	 */
+	public static final boolean THREAD_POOL = false;
+
+	/**
+	 * Gibt die Anzahl der Threads an. Konfigurierbar für die Leistungsmessung.
 	 */
 	public static final int NUMBER_OF_THREADS = 4;
+
+	/**
+	 * Gibt an in wieviele Scheiben der Quader aufgeteilt werden sollen.
+	 * Funktioniert nur im Zusammenhang mit der Thread-Pool Nutzung. Ohne
+	 * Thread-Pool muss die Anzahl so groß sein, wie NUMBER_OF_THREADS.
+	 * Ansonsten passt die Berechnung nicht und es kommt zur Fehlermeldung. <br>
+	 * Konfigurierbar für die Leistungsmessung.
+	 */
+	public static final int NUMBER_OF_DATA_AREAS_THREADPOOL = 4;
 
 	/**
 	 * Festlegung der Hitzequelle der linken Seite<br>
@@ -105,7 +120,7 @@ public class InitializeParameter {
 	 * 2: Wärmequelle in der Mitte der Fläche <br>
 	 * 3: Sinusfunktion, Änderung im zeitlichen Verlauf
 	 */
-	public static final int HEAT_MODE = 3;
+	public static final int HEAT_MODE = 1;
 
 	/**
 	 * Anzahl der Zellen im Ausgangsarray, die das Zentrum der Wärmequelle
@@ -113,11 +128,5 @@ public class InitializeParameter {
 	 * != Anzahl der pro Zelle angezeigten Pixel!
 	 */
 	public static final int CENTRE_SIZE = 10;
-
-	/**
-	 * Werden die Threads mittels Threadpool verwaltet? Bei false werden immer
-	 * neue Threads angelegt.
-	 */
-	public static final boolean THREAD_POOL = false;
 
 }
