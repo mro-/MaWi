@@ -130,10 +130,6 @@ public class ControlUnit implements Runnable {
 
 	/**
 	 * Aktualisiert die Temperaturen der linken Seite gemäß der Sinusfunktion. <br>
-	 * FIXME: Kann hier nicht auch mit Array-Referenzen gearbeitet werden, um
-	 * nicht immer auf isu1Base abzufragen und den Körper nur für ein Array
-	 * ausprogrammieren zu müssen? Nur als Idee <br>
-	 * 
 	 */
 	private void updateRTLSinus(int n) {
 		// n als double, damit mit ANchkommastellen gerechnet wird
@@ -145,20 +141,17 @@ public class ControlUnit implements Runnable {
 		// Neue Temperatur im Quader der linken Seite zuordnen
 		if (SharedVariables.isu1Base) {
 			for (int x = 1; x < SharedVariables.QLR - 1; x++) {
-				for (int z = 1; z < SharedVariables.QBR - 1; z++) {
+				for (int z = 1; z < SharedVariables.QHR - 1; z++) {
 					SharedVariables.u1[x][0][z] = newSinusTemperature;
 				}
 			}
 		} else {
 			for (int x = 1; x < SharedVariables.QLR - 1; x++) {
-				for (int z = 1; z < SharedVariables.QBR - 1; z++) {
+				for (int z = 1; z < SharedVariables.QHR - 1; z++) {
 					SharedVariables.u2[x][0][z] = newSinusTemperature;
 				}
 			}
 		}
-
-		// TODO Ausgabe löschen
-		System.out.println(newSinusTemperature);
 
 		// Color Array: linke Seite updaten
 		for (int x = 1; x < SharedVariables.QLR - 1; x++) {
