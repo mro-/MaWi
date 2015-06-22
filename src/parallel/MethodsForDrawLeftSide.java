@@ -14,8 +14,9 @@ import javafx.stage.Stage;
  */
 public class MethodsForDrawLeftSide {
 
+	// FIXME einkommentieren
 	// SharedVariables
-	public static Color[][] tempInColor = new Color[QLR][QHR];
+	// public static Color[][] tempInColor = new Color[QLR][QHR];
 
 	private static PixelWriter pixelWriter;
 
@@ -77,7 +78,8 @@ public class MethodsForDrawLeftSide {
 				float temperature = SharedVariables.u1[xCell][0][zCell];
 
 				// Color Array initialisieren
-				computeAndSetColor(temperature, xCell, zCell);
+				// FIXME einkommentieren
+				// computeAndSetColor(temperature, xCell, zCell);
 			}
 		}
 	}

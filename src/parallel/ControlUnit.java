@@ -140,13 +140,13 @@ public class ControlUnit implements Runnable {
 
 		// Neue Temperatur im Quader der linken Seite zuordnen
 		if (SharedVariables.isu1Base) {
-			for (int x = 1; x < SharedVariables.QLR - 1; x++) {
+			for (int x = 0; x < SharedVariables.QLR; x++) {
 				for (int z = 1; z < SharedVariables.QHR - 1; z++) {
 					SharedVariables.u1[x][0][z] = newSinusTemperature;
 				}
 			}
 		} else {
-			for (int x = 1; x < SharedVariables.QLR - 1; x++) {
+			for (int x = 0; x < SharedVariables.QLR; x++) {
 				for (int z = 1; z < SharedVariables.QHR - 1; z++) {
 					SharedVariables.u2[x][0][z] = newSinusTemperature;
 				}
@@ -154,7 +154,7 @@ public class ControlUnit implements Runnable {
 		}
 
 		// Color Array: linke Seite updaten
-		for (int x = 1; x < SharedVariables.QLR - 1; x++) {
+		for (int x = 0; x < SharedVariables.QLR; x++) {
 			OutputJFX.computeAndSetColor(newSinusTemperature, x, 0);
 		}
 	}

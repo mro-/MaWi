@@ -98,8 +98,8 @@ public class OutputJFX extends Application {
 		mappedTemperatureF = (mappedTemperatureF < 0) ? 0
 				: ((mappedTemperatureF > 1) ? 1 : mappedTemperatureF);
 
-		// Mappen auf 0-10 Skala
-		int mappedTemperatureI = Math.round(mappedTemperatureF * 10);
+		// Mappen auf 0-100 Skala
+		int mappedTemperatureI = Math.round(mappedTemperatureF * 100);
 
 		// synchronized Block eingetlich nicht nötig, da nicht in gleiche Felder
 		// geschrieben wird und das lesen erst nach dem Schreiben stattfindet.
