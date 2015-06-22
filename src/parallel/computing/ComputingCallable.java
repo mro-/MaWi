@@ -1,4 +1,4 @@
-package parallel;
+package parallel.computing;
 
 import java.util.concurrent.Callable;
 

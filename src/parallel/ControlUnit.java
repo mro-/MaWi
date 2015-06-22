@@ -10,6 +10,9 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import parallel.init.InitializeParameter;
+import parallel.visualization.ColorService;
+import parallel.visualization.OutputJFX;
 import javafx.application.Platform;
 
 /**
@@ -20,11 +23,10 @@ public class ControlUnit implements Runnable {
 
 	@Override
 	public void run() {
-		// Verfügbare Prozessoren
-		int numberOfProcessors = Runtime.getRuntime().availableProcessors();
-
 		// Startzeit messen
 		long startTime = System.currentTimeMillis();
+		// Zeit um Ausgabefenster neu zu zeichnen
+		float timeDrawing = 0;
 
 		// Thread-Pooling
 		ThreadPoolExecutor executor;
@@ -50,6 +52,7 @@ public class ControlUnit implements Runnable {
 			}
 
 			// Fläche neu einfärben
+			long startTimeDrawing = System.currentTimeMillis();
 			final FutureTask<Void> updateOutputWindowTask = new FutureTask<Void>(
 					new Callable<Void>() {
 						@Override
@@ -65,6 +68,8 @@ public class ControlUnit implements Runnable {
 			} catch (InterruptedException | ExecutionException e1) {
 				e1.printStackTrace();
 			}
+			long endTimeDrawing = System.currentTimeMillis();
+			timeDrawing += (endTimeDrawing - startTimeDrawing) / 1000.0f;
 
 			// Merker setzen, welches Array die Ausgangslage für den
 			// nächsten Iterationsschritt enthält
@@ -74,7 +79,8 @@ public class ControlUnit implements Runnable {
 				SharedVariables.isu1Base = true;
 			}
 
-			// Randtemperatur der linken Seite aktualisieren
+			// Randtemperatur der linken Seite aktualisieren, falls Temperatur
+			// sich sinusförmige ändern soll
 			if (InitializeParameter.HEAT_MODE == 3) {
 				updateRTLSinus(n);
 			}
@@ -82,8 +88,10 @@ public class ControlUnit implements Runnable {
 		// Endzeit messen
 		long endTime = System.currentTimeMillis();
 		float time = (endTime - startTime) / 1000.0f;
-		System.out.println("Zeit: " + time);
+		System.out.println("Gesamtzeit: " + time);
 
+		// Zeit ohne Zeichnen des Ausgabefensters
+		System.out.println("Zeit ohne Visualisierung: " + (time - timeDrawing));
 	}
 
 	/**
@@ -132,8 +140,8 @@ public class ControlUnit implements Runnable {
 	 * Aktualisiert die Temperaturen der linken Seite gemäß der Sinusfunktion. <br>
 	 */
 	private void updateRTLSinus(int n) {
-		// n als double, damit mit ANchkommastellen gerechnet wird
-		double sinusvalue = ((double) n) / 3;
+		// n als double, damit mit Nachkommastellen gerechnet wird
+		float sinusvalue = ((float) n) / 3;
 		// Berechnung der Temeratur mittels Sinus, Temperatur schwankt um die
 		// angegebenene Ausgangstemperatur der linken Seite
 		float newSinusTemperature = (float) ((Math.sin(sinusvalue) * 100) + InitializeParameter.RTL);
@@ -155,7 +163,7 @@ public class ControlUnit implements Runnable {
 
 		// Color Array: linke Seite updaten
 		for (int x = 0; x < SharedVariables.QLR; x++) {
-			OutputJFX.computeAndSetColor(newSinusTemperature, x, 0);
+			ColorService.computeAndSetColor(newSinusTemperature, x, 0);
 		}
 	}
 }

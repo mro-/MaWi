@@ -1,4 +1,4 @@
-package parallel;
+package parallel.computing;
 
 /**
  * Berechnung, die ein Thread durchführt.

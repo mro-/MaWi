@@ -1,9 +1,11 @@
-package parallel;
+package parallel.computing;
+
+import parallel.SharedVariables;
+import parallel.visualization.ColorService;
 
 /**
  * Auslagerung der Berechnungsfunktion für die Wärmediffusion. Quader wird in
- * Scheiben geschnitten.
- *
+ * Scheiben geschnitten entlang der x-Achse.
  */
 public class ComputingService {
 
@@ -20,7 +22,7 @@ public class ComputingService {
 					if (SharedVariables.isu1Base) {
 						oldTemperature = SharedVariables.u1[x][y][z];
 						newTemperature = oldTemperature
-								+ SharedVariables.FAKTOR
+								+ SharedVariables.FACTOR
 								* (SharedVariables.u1[x - 1][y][z]
 										+ SharedVariables.u1[x + 1][y][z]
 										+ SharedVariables.u1[x][y - 1][z]
@@ -31,7 +33,7 @@ public class ComputingService {
 					} else {
 						oldTemperature = SharedVariables.u2[x][y][z];
 						newTemperature = oldTemperature
-								+ SharedVariables.FAKTOR
+								+ SharedVariables.FACTOR
 								* (SharedVariables.u2[x - 1][y][z]
 										+ SharedVariables.u2[x + 1][y][z]
 										+ SharedVariables.u2[x][y - 1][z]
@@ -42,11 +44,11 @@ public class ComputingService {
 					}
 					// Farbe für entsprechende Zellen berechnen, falls sich die
 					// Temperatur verändert hat
-					// => Optimierung, Farbe könnte auch immer am Ende berechnet
-					// werden für alle Zellen
+					// FIXME => Optimierung, Farbe könnte auch immer am Ende
+					// berechnet werden für alle Zellen
 					if (z == SharedVariables.Z_HALF
 							&& newTemperature != oldTemperature) {
-						OutputJFX.computeAndSetColor(newTemperature, x, y);
+						ColorService.computeAndSetColor(newTemperature, x, y);
 					}
 				}
 			}

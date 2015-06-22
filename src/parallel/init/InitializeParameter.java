@@ -1,4 +1,4 @@
-package parallel;
+package parallel.init;
 
 /**
  * Modul dient der Festlegung aller Konfigurationsparameter.
@@ -98,7 +98,7 @@ public class InitializeParameter {
 	 * Werden die Threads mittels Threadpool verwaltet? Bei false werden immer
 	 * neue Threads angelegt.
 	 */
-	public static final boolean THREAD_POOL = false;
+	public static final boolean THREAD_POOL = true;
 
 	/**
 	 * Gibt die Anzahl der Threads an. Konfigurierbar für die Leistungsmessung.
@@ -121,12 +121,5 @@ public class InitializeParameter {
 	 * 3: Sinusfunktion, Änderung im zeitlichen Verlauf
 	 */
 	public static final int HEAT_MODE = 2;
-
-	/**
-	 * Anzahl der Zellen im Ausgangsarray, die das Zentrum der Wärmequelle
-	 * bilden. <br>
-	 * != Anzahl der pro Zelle angezeigten Pixel!
-	 */
-	public static final int CENTRE_SIZE = 2;
 
 }
