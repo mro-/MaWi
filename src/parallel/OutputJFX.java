@@ -126,11 +126,18 @@ public class OutputJFX extends Application {
 	private void createComputingServices() {
 		int start = 1;
 		int end;
-		int dataRangeQL = SharedVariables.QLR
-				/ InitializeParameter.NUMBER_OF_THREADS;
-		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
+		int numberOfAreas;
+		// Ja nach Thread Varinate die Unterteilung vornehmen
+		if (InitializeParameter.THREAD_POOL) {
+			numberOfAreas = InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL;
+		} else {
+			numberOfAreas = InitializeParameter.NUMBER_OF_THREADS;
+		}
+
+		int dataRangeQL = SharedVariables.QLR / numberOfAreas;
+		for (int i = 0; i < numberOfAreas; i++) {
 			// Automatische Aufteilung der Daten (in Scheiben)
-			if (i < InitializeParameter.NUMBER_OF_THREADS - 1) {
+			if (i < numberOfAreas - 1) {
 				end = start + dataRangeQL;
 			} else {
 				end = SharedVariables.QLR - 1;

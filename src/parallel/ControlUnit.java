@@ -31,9 +31,11 @@ public class ControlUnit implements Runnable {
 		if (InitializeParameter.THREAD_POOL) {
 			executor = new ThreadPoolExecutor(
 					InitializeParameter.NUMBER_OF_THREADS,
-					InitializeParameter.NUMBER_OF_THREADS, 0, TimeUnit.SECONDS,
+					InitializeParameter.NUMBER_OF_THREADS,
+					0,
+					TimeUnit.SECONDS,
 					new ArrayBlockingQueue<>(
-							InitializeParameter.NUMBER_OF_THREADS));
+							InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL));
 		}
 
 		// Iterationsschritte durchführen
@@ -110,9 +112,9 @@ public class ControlUnit implements Runnable {
 	 */
 	private void createAndRunThreadsWithPool(ThreadPoolExecutor executor) {
 		List<Future<Void>> futures = new ArrayList<Future<Void>>(
-				InitializeParameter.NUMBER_OF_THREADS);
+				InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL);
 		// threads aus Thread-Pool starten
-		for (int i = 0; i < InitializeParameter.NUMBER_OF_THREADS; i++) {
+		for (int i = 0; i < InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL; i++) {
 			futures.add(executor.submit(SharedVariables.computingCallable[i]));
 		}
 		// Nötig, damit erst weiter gemacht wird wenn alle Threads fertig sein
