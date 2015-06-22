@@ -42,6 +42,12 @@ public class SharedVariables {
 	public static final int X_HALF = SharedVariables.QLR / 2;
 
 	/**
+	 * Durchschnittliche Randtemperatur der linken Randtemperaturen berechnen
+	 */
+	public static final float AVERAGE_BORDER_TEMP_LEFT_SIDE = (InitializeParameter.RTO
+			+ InitializeParameter.RTU + InitializeParameter.RTV + InitializeParameter.RTH) / 4;
+
+	/**
 	 * Länge der 2D Fläche zur Visualisierung.
 	 */
 	public static final int QLR_2D = SharedVariables.QLR

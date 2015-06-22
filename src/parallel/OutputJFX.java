@@ -20,8 +20,6 @@ public class OutputJFX extends Application {
 		Application.launch(args);
 	}
 
-	private int partials;
-
 	@Override
 	public void start(Stage primaryStage) {
 		// Ausgabefenster initialisieren
@@ -91,8 +89,6 @@ public class OutputJFX extends Application {
 	/**
 	 * Berechnung des Farbwertes und schreiben in das Array, das die Farbwerte
 	 * für die 2D Darstellung enthält. <br>
-	 * FIXME: Ich habe die Methode von private zu public static geändert, um aus
-	 * der ControlUnit darauf zugreifen zu können. Spricht was dagegen? <br>
 	 */
 	public static void computeAndSetColor(float temperature, int x, int y) {
 		// Temperatur auf 0-1 Skala mappen
@@ -110,13 +106,6 @@ public class OutputJFX extends Application {
 		synchronized (SharedVariables.tempInColor) {
 			SharedVariables.tempInColor[x][y] = SharedVariables.COLORS[mappedTemperatureI];
 		}
-	}
-
-	/**
-	 * Alternative Farbberechnung (fließender Übergang)
-	 */
-	private void computeAndSetColor2(float temperature, int x, int y) {
-		SharedVariables.tempInColor[x][y] = Color.hsb(temperature, 1, 1);
 	}
 
 	/**
@@ -156,8 +145,6 @@ public class OutputJFX extends Application {
 
 	/**
 	 * Initialiserung des Quaders mit Randtemperaturen und Starttemperatur.
-	 * FIXME: Für die zentrale Wärmequelle müssen hier alle Randtemparaturen
-	 * noch gleichgesetzt werden
 	 */
 	public void initializeQuader() {
 
@@ -165,8 +152,20 @@ public class OutputJFX extends Application {
 			for (int y = 0; y < SharedVariables.QBR; y++) {
 				for (int z = 0; z < SharedVariables.QHR; z++) {
 
-					// Hintere Seite mit Randtemperatur initialisieren
-					if (x == 0) {
+					// Linke Seite mit Randtemperatur initialisieren
+					if (y == 0) {
+						SharedVariables.u1[x][y][z] = getTemperatureForHeatMode(
+								x, z);
+						SharedVariables.u2[x][y][z] = getTemperatureForHeatMode(
+								x, z);
+
+						// Rechte Seite mit Randtemperatur initialisieren
+					} else if (y == SharedVariables.QBR - 1) {
+						SharedVariables.u1[x][y][z] = InitializeParameter.RTR;
+						SharedVariables.u2[x][y][z] = InitializeParameter.RTR;
+
+						// Hintere Seite mit Randtemperatur initialisieren
+					} else if (x == 0) {
 						SharedVariables.u1[x][y][z] = InitializeParameter.RTH;
 						SharedVariables.u2[x][y][z] = InitializeParameter.RTH;
 
@@ -175,17 +174,6 @@ public class OutputJFX extends Application {
 						SharedVariables.u1[x][y][z] = InitializeParameter.RTV;
 						SharedVariables.u2[x][y][z] = InitializeParameter.RTV;
 
-						// Rechte Seite mit Randtemperatur initialisieren
-					} else if (y == SharedVariables.QBR - 1) {
-						SharedVariables.u1[x][y][z] = InitializeParameter.RTR;
-						SharedVariables.u2[x][y][z] = InitializeParameter.RTR;
-
-						// Linke Seite mit Randtemperatur initialisieren
-					} else if (y == 0) {
-						SharedVariables.u1[x][y][z] = getTemperatureForHeatMode(
-								x, z);
-						SharedVariables.u2[x][y][z] = getTemperatureForHeatMode(
-								x, z);
 						// Untere Seite mit Randtemperatur initialisieren
 					} else if (z == 0) {
 						SharedVariables.u1[x][y][z] = InitializeParameter.RTU;
@@ -201,262 +189,164 @@ public class OutputJFX extends Application {
 						SharedVariables.u1[x][y][z] = InitializeParameter.TS;
 						SharedVariables.u2[x][y][z] = InitializeParameter.TS;
 					}
-					// System.out.print(SharedVariables_3D.u1[x][y][z] + " ");
 				}
-				// System.out.print("\n");
 			}
-			// System.out.println();
 		}
 
-		switch (InitializeParameter.HEAT_MODE) {
-		case 2:
+		// Temperaturen der linken Seite berechnen, falls Wärmequelle in der
+		// Mitte ist
+		if (InitializeParameter.HEAT_MODE == 2) {
 			updateRTlinksForCentralHeatMode();
-			// calcCentralHeat();
 		}
 	}
 
 	/**
-	 * RTlinks berechnen für die zentrale Hitzequelle mit absteigenden
-	 * Temperaturen <br>
-	 * Idee: Temperatur um den Kern herum vergrößern <br>
-	 * FIXME Running with errors!
-	 * 
-	 * @deprecated
-	 */
-	private void calcCentralHeat() {
-		// Zentrale Wärmequelle setzen
-		setCentreHeatSourceOnRTlinks();
-
-		// Breitere Seite ermitteln
-		boolean xIsWider = true;
-		if (SharedVariables.QHR > SharedVariables.QLR) {
-			xIsWider = false;
-		}
-
-		// Betriebsparameter für schmale und breite Seite ermitteln
-		int wideHalf = SharedVariables.X_HALF;
-		int wideLength = SharedVariables.QLR;
-		int narrowHalf = SharedVariables.Z_HALF;
-		int narrowLength = SharedVariables.QHR;
-		if (!xIsWider) {
-			wideHalf = SharedVariables.Z_HALF;
-			wideLength = SharedVariables.QHR;
-			narrowHalf = SharedVariables.X_HALF;
-			narrowLength = SharedVariables.QLR;
-		}
-		// Betriebsparameter für schmale und breite Seite ermitteln
-		int upperSideWideCore = wideHalf
-				+ (InitializeParameter.CENTRE_SIZE / 2);
-		int lowerSideWideCore = wideHalf
-				- (InitializeParameter.CENTRE_SIZE / 2);
-		int upperSideNarrowCore = narrowHalf
-				+ (InitializeParameter.CENTRE_SIZE / 2);
-		int lowerSideNarrowCore = narrowHalf
-				- (InitializeParameter.CENTRE_SIZE / 2);
-
-		float newTemp = InitializeParameter.RTL
-				- (InitializeParameter.RTL * 0.01f);
-
-		// Von der Mitte nach links gehen
-		for (int wideToLeft = lowerSideWideCore - 1; wideToLeft > 0; wideToLeft--) {
-			// Von der Mitte nach oben und unten gehen
-			for (int narrowToTop = upperSideNarrowCore; narrowToTop > lowerSideNarrowCore; narrowToTop--) {
-				updateTemp(wideToLeft, narrowToTop, newTemp, xIsWider);
-			}
-			newTemp = newTemp - (InitializeParameter.RTL * 0.01f);
-			// Core vergrößern
-			upperSideNarrowCore++;
-			lowerSideNarrowCore--;
-		}
-
-		// Zurücksetzen der uppeSideNarrow und lowerSideNarrow
-		upperSideNarrowCore = narrowHalf
-				+ (InitializeParameter.CENTRE_SIZE / 2);
-		lowerSideNarrowCore = narrowHalf
-				- (InitializeParameter.CENTRE_SIZE / 2);
-		newTemp = InitializeParameter.RTL - (InitializeParameter.RTL * 0.01f);
-
-		// Von der Mitte nach rechts gehen
-		for (int wideToRight = upperSideWideCore; wideToRight < wideLength; wideToRight++) {
-			// Von der Mitte nach oben und unten gehen
-			for (int narrowToTop = upperSideNarrowCore - 1; narrowToTop > lowerSideNarrowCore; narrowToTop--) {
-				updateTemp(wideToRight, narrowToTop, newTemp, xIsWider);
-			}
-			newTemp = newTemp - (InitializeParameter.RTL * 0.01f);
-			// Core vergrößern
-			upperSideNarrowCore++;
-			lowerSideNarrowCore--;
-		}
-	}
-
-	/**
-	 * Aktualisiert die Temparatur in Abhängigkeit der breiteren und schmaleren
-	 * Zeite
-	 * 
-	 * @param wide
-	 * @param narrow
-	 * @param newTemp
-	 * @param xIsWide
-	 * @deprecated
-	 */
-	private void updateTemp(int wide, int narrow, float newTemp, boolean xIsWide) {
-		int x = wide, z = narrow;
-		if (!xIsWide) {
-			x = narrow;
-			z = wide;
-		}
-		SharedVariables.u2[x][0][z] = newTemp;
-		SharedVariables.u1[x][0][z] = newTemp;
-		System.out.println(SharedVariables.u1[x][0][z]);
-	}
-
-	/**
-	 * Initialisiert die zentrale Wärmequelle
-	 * 
-	 * @deprecated
-	 */
-	private void setCentreHeatSourceOnRTlinks() {
-		for (int x = SharedVariables.X_HALF
-				- (InitializeParameter.CENTRE_SIZE / 2); x < SharedVariables.X_HALF
-				+ (InitializeParameter.CENTRE_SIZE / 2); x++) {
-			// Z-Werte von der Array-Mitte um halbe Zetrum-Größe nach oben
-			// und unten ablaufen
-			for (int z = SharedVariables.Z_HALF
-					- (InitializeParameter.CENTRE_SIZE / 2); z < SharedVariables.Z_HALF
-					+ (InitializeParameter.CENTRE_SIZE / 2); z++) {
-				// In der Mitte die heißeste Stelle setzen
-				SharedVariables.u2[x][0][z] = InitializeParameter.RTL;
-				SharedVariables.u1[x][0][z] = InitializeParameter.RTL;
-			}
-		}
-	}
-
-	/**
-	 * Berechnung der Randtemperaturen bei zentraler Wärmequelle <br>
-	 * RTlinks verändet sich bei zentrale Wärmequelle über die Zeit nicht <br>
-	 * 
-	 * FIXME Verschiedene Quaderlängen berücksichtigen
-	 * 
+	 * Berechnung der Temperaturen der linken Seite, wenn die Wärmequelle in der
+	 * Mitte ist. Berechnung geht kreisförmig vor. Die Randtemperatur wird an
+	 * den vier Seiten gleich der Durchschnittstemperatur der Ränder gesetzt.
 	 */
 	private void updateRTlinksForCentralHeatMode() {
-		// Temperaturen bestimmen
-		float tempZone1 = InitializeParameter.RTL * 0.15f;
-		float tempZone2 = InitializeParameter.RTL * 0.2f;
-		float tempZone3 = InitializeParameter.RTL * 0.3f;
-		float tempZone4 = InitializeParameter.RTL * 0.4f;
+		// Ausdehnung der Hitzequelle in der Mitte
+		int xStartIndex;
+		int xEndIndex;
+		int zStartIndex;
+		int zEndIndex;
 
-		// Sicherheitsabfrage
-		if (SharedVariables.Z_HALF > InitializeParameter.CENTRE_SIZE
-				&& SharedVariables.X_HALF > InitializeParameter.CENTRE_SIZE) {
-			/**
-			 * Alte Berechnung
-			 */
-			// // X-Werte von der Array-Mitte um halbe Zetrum-Größe nach oben
-			// und
-			// // unten ablaufen
-			// for (int x = SharedVariables.X_HALF
-			// - InitializeParameter.CENTRE_SIZE / 2; x < SharedVariables.X_HALF
-			// + InitializeParameter.CENTRE_SIZE / 2; x++) {
-			// // Z-Werte von der Array-Mitte um halbe Zetrum-Größe nach oben
-			// // und unten ablaufen
-			// for (int z = SharedVariables.Z_HALF
-			// - InitializeParameter.CENTRE_SIZE / 2; z < SharedVariables.Z_HALF
-			// + InitializeParameter.CENTRE_SIZE / 2; z++) {
-			// // In der Mitte die heißeste Stelle setzen
-			// SharedVariables.u2[x][0][z] = InitializeParameter.RTL;
-			// SharedVariables.u1[x][0][z] = InitializeParameter.RTL;
-			// }
-			// }
+		// Ist die Kante der x-Länge oder z-Höhe länger?
+		boolean xLenghtGreaterThanZ = SharedVariables.QLR > SharedVariables.QHR;
 
-			/**
-			 * Größe der Array-Bereiche bestimmen <br>
-			 * Feste Anzahl von Ingesamt 10 Chunks, abzüglich des Zentrums
-			 */
-			int numOfFieldsWithoutCentreX = SharedVariables.QLR
-					- InitializeParameter.CENTRE_SIZE - 2;
-			int numOfChunksX = (int) Math
-					.ceil((double) numOfFieldsWithoutCentreX / 8);
-			int numOfFieldsWithoutCentreZ = SharedVariables.QHR
-					- InitializeParameter.CENTRE_SIZE - 2;
-			int numOfChunksZ = (int) Math
-					.ceil((double) numOfFieldsWithoutCentreZ / 8);
+		// Ausdehnung der Hitzequelle bestimmen. Variiert je nach Länge der
+		// Seiten von 2x2 bis 3x3 Quaderzellen.
+		// Quaderlänge (x-Achse) gerade -> Hitzequelle 2 Zellen breit
+		if (SharedVariables.QLR % 2 == 0) {
+			xEndIndex = SharedVariables.QLR / 2;
+			xStartIndex = xEndIndex - 1;
+			// Quaderlänge (x-Achse) ungerade -> Hitzequelle 3 Zellen breit
+		} else {
+			xEndIndex = ((SharedVariables.QLR - 1) / 2) + 1;
+			xStartIndex = xEndIndex - 2;
+		}
+		// Quaderhöhe (z-Achse) gerade -> Hitzequelle 2 Zellen hoch
+		if (SharedVariables.QHR % 2 == 0) {
+			zEndIndex = SharedVariables.QHR / 2;
+			zStartIndex = zEndIndex - 1;
+			// Quaderhöhe (z-Achse) ungerade -> Hitzequelle 3 Zellen hoch
+		} else {
+			zEndIndex = ((SharedVariables.QHR - 1) / 2) + 1;
+			zStartIndex = zEndIndex - 2;
+		}
 
-			// Gesamtes Array durchlaufen
-			for (int x = 1; x < SharedVariables.QLR - 1; x++) {
-				for (int z = 1; z < SharedVariables.QHR - 1; z++) {
-					// Oberen Bereich durchlaufen
-					if ((x >= 0 && x < numOfChunksX)
-							|| (z >= 0 && z < numOfChunksZ)) {
-						SharedVariables.u2[x][0][z] = tempZone1;
-						SharedVariables.u1[x][0][z] = tempZone1;
-					} else if ((x >= numOfChunksX && x < numOfChunksX * 2)
-							|| (z >= numOfChunksZ && z < numOfChunksZ * 2)) {
-						SharedVariables.u2[x][0][z] = tempZone2;
-						SharedVariables.u1[x][0][z] = tempZone2;
-					} else if ((x >= numOfChunksX * 2 && x < numOfChunksX * 3)
-							|| (z >= numOfChunksZ * 2 && z < numOfChunksZ * 3)) {
-						SharedVariables.u2[x][0][z] = tempZone3;
-						SharedVariables.u1[x][0][z] = tempZone3;
-					} else if ((x >= numOfChunksX * 3 && x < numOfChunksX * 4)
-							|| (z >= numOfChunksZ * 3 && z < numOfChunksZ * 4)) {
-						SharedVariables.u2[x][0][z] = tempZone4;
-						SharedVariables.u1[x][0][z] = tempZone4;
-					}
-
-					// Zentrum berechnen
-					else if ((x >= SharedVariables.X_HALF
-							- InitializeParameter.CENTRE_SIZE / 2 - 1 && x < SharedVariables.X_HALF
-							+ InitializeParameter.CENTRE_SIZE / 2 + 1)
-							&& (z >= SharedVariables.Z_HALF
-									- InitializeParameter.CENTRE_SIZE / 2 - 1 && z < SharedVariables.Z_HALF
-									+ InitializeParameter.CENTRE_SIZE / 2 + 1)) {
-						SharedVariables.u2[x][0][z] = InitializeParameter.RTL;
-						SharedVariables.u1[x][0][z] = InitializeParameter.RTL;
-					}
-
-					// Andere Seite berechnen
-					else if ((x >= numOfChunksX * 4
-							+ InitializeParameter.CENTRE_SIZE && x < numOfChunksX
-							* 5 + InitializeParameter.CENTRE_SIZE + 2)
-							|| (z >= numOfChunksZ * 4
-									+ InitializeParameter.CENTRE_SIZE && z < numOfChunksZ
-									* 5 + InitializeParameter.CENTRE_SIZE + 2)) {
-						SharedVariables.u2[x][0][z] = tempZone4;
-						SharedVariables.u1[x][0][z] = tempZone4;
-					} else if ((x >= numOfChunksX * 5
-							+ InitializeParameter.CENTRE_SIZE + 2 && x < numOfChunksX
-							* 6 + InitializeParameter.CENTRE_SIZE + 2)
-							|| (z >= numOfChunksZ * 5
-									+ InitializeParameter.CENTRE_SIZE + 2 && z < numOfChunksZ
-									* 6 + InitializeParameter.CENTRE_SIZE + 2)) {
-						SharedVariables.u2[x][0][z] = tempZone3;
-						SharedVariables.u1[x][0][z] = tempZone3;
-					} else if ((x >= numOfChunksX * 6
-							+ InitializeParameter.CENTRE_SIZE + 2 && x < numOfChunksX
-							* 7 + InitializeParameter.CENTRE_SIZE + 2)
-							|| (z >= numOfChunksZ * 6
-									+ InitializeParameter.CENTRE_SIZE + 2 && z < numOfChunksZ
-									* 7 + InitializeParameter.CENTRE_SIZE + 2)) {
-						SharedVariables.u2[x][0][z] = tempZone2;
-						SharedVariables.u1[x][0][z] = tempZone2;
-					} else if ((x >= numOfChunksX * 7
-							+ InitializeParameter.CENTRE_SIZE + 2 && x < numOfChunksX
-							* 8 + InitializeParameter.CENTRE_SIZE)
-							|| (z >= numOfChunksZ * 7
-									+ InitializeParameter.CENTRE_SIZE + 2 && z < numOfChunksZ
-									* 8 + InitializeParameter.CENTRE_SIZE)) {
-						SharedVariables.u2[x][0][z] = tempZone1;
-						SharedVariables.u1[x][0][z] = tempZone1;
-					}
-
-				}
-				// System.out
-				// .println(SharedVariables.u2[x][0][SharedVariables.Z_HALF]);
-
+		// Wärmequelle in der Mitte der initialisieren
+		for (int x = xStartIndex; x <= xEndIndex; x++) {
+			for (int z = zStartIndex; z <= zEndIndex; z++) {
+				SharedVariables.u1[x][0][z] = InitializeParameter.RTL;
+				SharedVariables.u2[x][0][z] = InitializeParameter.RTL;
 			}
-			for (int z = 0; z < SharedVariables.QHR; z++) {
-				System.out
-						.println(SharedVariables.u1[SharedVariables.X_HALF][0][z]);
+		}
+
+		// Faktor berechnen um den die Temperatur von der Mitte zum Rand linear
+		// abnimmt (von der längeren Seite ausgehen).
+		float factorPerCell;
+		if (xLenghtGreaterThanZ) {
+			factorPerCell = (InitializeParameter.RTL - SharedVariables.AVERAGE_BORDER_TEMP_LEFT_SIDE)
+					/ (SharedVariables.QLR / 2);
+		} else {
+			factorPerCell = (InitializeParameter.RTL - SharedVariables.AVERAGE_BORDER_TEMP_LEFT_SIDE)
+					/ (SharedVariables.QHR / 2);
+		}
+
+		// Kreis um eine Einheit vergrößern
+		xStartIndex--;
+		xEndIndex++;
+		zStartIndex--;
+		zEndIndex++;
+
+		// Weitere Ausdehnung von der Mitte ausgehend berechnen (kreisförmig,
+		// quadratisch).
+		int counter;
+		for (counter = 1; xStartIndex > 0 && zStartIndex > 0
+				&& xEndIndex < SharedVariables.QLR - 1
+				&& zEndIndex < SharedVariables.QHR - 1; counter++) {
+
+			// nach links und rechts, ausgehen von der Mitte Temperaturen
+			// berechnen
+			for (int x = xStartIndex; x <= xEndIndex; x++) {
+				for (int z = zStartIndex; z <= zEndIndex; z++) {
+					if (x == xStartIndex || x == xEndIndex) {
+						SharedVariables.u1[x][0][z] = InitializeParameter.RTL
+								- (counter * factorPerCell);
+						SharedVariables.u2[x][0][z] = InitializeParameter.RTL
+								- (counter * factorPerCell);
+					}
+				}
+			}
+			// nach oben und unten, ausgehen von der Mitte Temperaturen
+			// berechnen
+			for (int z = zStartIndex; z <= zEndIndex; z++) {
+				for (int x = xStartIndex; x <= xEndIndex; x++) {
+					if (z == zStartIndex || z == zEndIndex) {
+						SharedVariables.u1[x][0][z] = InitializeParameter.RTL
+								- (counter * factorPerCell);
+						SharedVariables.u2[x][0][z] = InitializeParameter.RTL
+								- (counter * factorPerCell);
+					}
+				}
+			}
+
+			// Kreis um eine Einheit vergrößern
+			xStartIndex--;
+			xEndIndex++;
+			zStartIndex--;
+			zEndIndex++;
+		}
+
+		// Wenn die linke Seite rechteckig ist, müssen darüber hinaus noch
+		// weitere Initialisierungen vorgenommen werden für die restlichen
+		// Flächen (Temperatur weiterhin linear absteigend zum Rand).
+		int startCounter = counter;
+		if (xLenghtGreaterThanZ) {
+			// Bereich links der Mitte
+			for (int x = xStartIndex; x > 0; x--) {
+				for (int z = 1; z < SharedVariables.QHR - 1; z++) {
+					SharedVariables.u1[x][0][z] = InitializeParameter.RTL
+							- (counter * factorPerCell);
+					SharedVariables.u2[x][0][z] = InitializeParameter.RTL
+							- (counter * factorPerCell);
+				}
+				counter++;
+			}
+			counter = startCounter;
+			// Bereich rechts der Mitte
+			for (int x = xEndIndex; x < SharedVariables.QLR - 1; x++) {
+				for (int z = 1; z < SharedVariables.QHR - 1; z++) {
+					SharedVariables.u1[x][0][z] = InitializeParameter.RTL
+							- (counter * factorPerCell);
+					SharedVariables.u2[x][0][z] = InitializeParameter.RTL
+							- (counter * factorPerCell);
+				}
+				counter++;
+			}
+		} else {
+			// Bereich unterhalb der Mitte
+			for (int z = zStartIndex; z > 0; z--) {
+				for (int x = 1; x < SharedVariables.QLR - 1; x++) {
+					SharedVariables.u1[x][0][z] = InitializeParameter.RTL
+							- (counter * factorPerCell);
+					SharedVariables.u2[x][0][z] = InitializeParameter.RTL
+							- (counter * factorPerCell);
+				}
+				counter++;
+			}
+			counter = startCounter;
+			// Bereich oberhalb der Mitte
+			for (int z = zEndIndex; z < SharedVariables.QHR - 1; z++) {
+				for (int x = 1; x < SharedVariables.QLR - 1; x++) {
+					SharedVariables.u1[x][0][z] = InitializeParameter.RTL
+							- (counter * factorPerCell);
+					SharedVariables.u2[x][0][z] = InitializeParameter.RTL
+							- (counter * factorPerCell);
+				}
+				counter++;
 			}
 		}
 	}
@@ -473,8 +363,10 @@ public class OutputJFX extends Application {
 			// Fläche entspricht ingesamt der linken Randtemperatur
 			return InitializeParameter.RTL;
 		case 2:
-			// Wärmequelle ist in der Mitte
-			return InitializeParameter.TS;
+			// Die Fläche wird mit der durchschnittlichen Randtemperatur
+			// initialisiert. So muss später nicht noch mal extra der Außenrand
+			// der linken Seite initialisiert werden.
+			return SharedVariables.AVERAGE_BORDER_TEMP_LEFT_SIDE;
 		case 3:
 			// Fläche entspricht ingesamt der linken Randtemperatur
 			return InitializeParameter.RTL;
@@ -510,7 +402,7 @@ public class OutputJFX extends Application {
 	private void initializeOutputWindow(Stage primaryStage) {
 		primaryStage.setTitle("Simulation Wärmediffusion");
 		BorderPane root = new BorderPane();
-		// TODO Scrollbar machen
+		// FIXME Scrollbar machen
 		// 20 Pixel Außenrand
 		Scene scene = new Scene(root, SharedVariables.QBR_2D,
 				SharedVariables.QLR_2D, Color.WHITE);

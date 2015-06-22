@@ -9,7 +9,7 @@ public class InitializeParameter {
 	 * X: Physikalische Ausdehnung des Quaders, in der Länge (Angabe in Anzahl
 	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QL = 14;
+	public static final int QL = 100;
 
 	/**
 	 * Y: Physikalische Ausdehnung des Quaders, in der Breite (Angabe in Anzahl
@@ -21,7 +21,7 @@ public class InitializeParameter {
 	 * Z: Physikalische Ausdehnung des Quaders, in der Höhe (Angabe in Anzahl
 	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QH = 16;
+	public static final int QH = 50;
 
 	/**
 	 * Kantenlänge des finiten Elementes (einer Zelle).
@@ -34,7 +34,7 @@ public class InitializeParameter {
 	public static final float ALPHA = 0.1f;
 
 	/**
-	 * Diskreter Zeitschritt t. Immer 1.
+	 * Diskreter Zeitschritt t.
 	 */
 	public static final float T = 1f;
 
@@ -51,32 +51,32 @@ public class InitializeParameter {
 	/**
 	 * Randtemperatur der rechten Quaderseite.
 	 */
-	public static final float RTR = 30;
+	public static final float RTR = 0;
 
 	/**
 	 * Randtemperatur der vorderen Quaderseite.
 	 */
-	public static final float RTV = 30;
+	public static final float RTV = 0;
 
 	/**
 	 * Randtemperatur der hinteren Quaderseite.
 	 */
-	public static final float RTH = 30;
+	public static final float RTH = 0;
 
 	/**
 	 * Randtemperatur der unteren Quaderseite.
 	 */
-	public static final float RTU = 30;
+	public static final float RTU = 0;
 
 	/**
 	 * Randtemperatur der oberen Quaderseite.
 	 */
-	public static final float RTO = 30;
+	public static final float RTO = 0;
 
 	/**
 	 * Temperatur des Quaders zum Startzeitpunkt t=0.
 	 */
-	public static final float TS = 30;
+	public static final float TS = 0;
 
 	/**
 	 * Festlegung der minimalen Temperatur (Simulationsfarbe blau).
@@ -86,13 +86,13 @@ public class InitializeParameter {
 	/**
 	 * Festlegung der maximalen Temperatur (Simulationsfarbe rot).
 	 */
-	public static final float MAX_TEMP = 100;
+	public static final float MAX_TEMP = 300;
 
 	/**
 	 * Festlegung, wie viele Pixel für die Visualisierung einer Zelle benutzt
 	 * werden sollen. z.B. Wert 4: 4x4 Pixel => 1 Quaderzelle
 	 */
-	public static final int CELL_WIDTH = 4;
+	public static final int CELL_WIDTH = 5;
 
 	/**
 	 * Werden die Threads mittels Threadpool verwaltet? Bei false werden immer
