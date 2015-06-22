@@ -49,7 +49,7 @@ public class ControlUnit implements Runnable {
 
 			// Fläche neu einfärben
 			final FutureTask<Void> updateOutputWindowTask = new FutureTask<Void>(
-					new Callable() {
+					new Callable<Void>() {
 						@Override
 						public Void call() throws Exception {
 							OutputJFX.updatePixelInView();

@@ -105,7 +105,11 @@ public class OutputJFX extends Application {
 		// Mappen auf 0-10 Skala
 		int mappedTemperatureI = Math.round(mappedTemperatureF * 10);
 
-		SharedVariables.tempInColor[x][y] = SharedVariables.COLORS[mappedTemperatureI];
+		// synchronized Block eingetlich nicht nötig, da nicht in gleiche Felder
+		// geschrieben wird und das lesen erst nach dem Schreiben stattfindet.
+		synchronized (SharedVariables.tempInColor) {
+			SharedVariables.tempInColor[x][y] = SharedVariables.COLORS[mappedTemperatureI];
+		}
 	}
 
 	/**
