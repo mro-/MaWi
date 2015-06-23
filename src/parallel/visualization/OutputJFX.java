@@ -2,10 +2,10 @@ package parallel.visualization;
 
 import javafx.application.Application;
 import javafx.scene.Scene;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
-import javafx.scene.layout.BorderPane;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 import parallel.ControlUnit;
@@ -83,10 +83,9 @@ public class OutputJFX extends Application {
 	 */
 	private void initializeOutputWindow(Stage primaryStage) {
 		primaryStage.setTitle("Simulation Wärmediffusion");
-		BorderPane root = new BorderPane();
-		// FIXME Scrollbar machen
-		Scene scene = new Scene(root, SharedVariables.QBR_2D,
-				SharedVariables.QLR_2D, Color.WHITE);
+		ScrollPane root = new ScrollPane();
+		Scene scene = new Scene(root, SharedVariables.QBR_2D + 2,
+				SharedVariables.QLR_2D + 2, Color.WHITE);
 
 		// Image und dessen PixelWriter ist die performanteste Methode um in
 		// JavaFX Pixel darzustellen
@@ -95,7 +94,7 @@ public class OutputJFX extends Application {
 				SharedVariables.QLR_2D);
 		imageView.setImage(image);
 		pixelWriter = image.getPixelWriter();
-		root.setCenter(imageView);
+		root.setContent(imageView);
 		primaryStage.setScene(scene);
 	}
 }

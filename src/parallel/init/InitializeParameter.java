@@ -15,7 +15,7 @@ public class InitializeParameter {
 	 * Y: Physikalische Ausdehnung des Quaders, in der Breite (Angabe in Anzahl
 	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QB = 100;
+	public static final int QB = 500;
 
 	/**
 	 * Z: Physikalische Ausdehnung des Quaders, in der Höhe (Angabe in Anzahl
@@ -120,6 +120,6 @@ public class InitializeParameter {
 	 * 2: Wärmequelle in der Mitte der Fläche <br>
 	 * 3: Sinusfunktion, Änderung im zeitlichen Verlauf
 	 */
-	public static final int HEAT_MODE = 2;
+	public static final int HEAT_MODE = 1;
 
 }
