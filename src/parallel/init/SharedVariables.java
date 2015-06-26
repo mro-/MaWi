@@ -1,9 +1,9 @@
 package parallel.init;
 
+import javafx.scene.paint.Color;
 import parallel.InitializeParameter;
 import parallel.computing.ComputingCallable;
 import parallel.computing.ComputingRunnable;
-import javafx.scene.paint.Color;
 
 /**
  * Modul dient der Sammlung aller gemeinsamen Variablen.

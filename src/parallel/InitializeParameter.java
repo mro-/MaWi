@@ -9,19 +9,19 @@ public class InitializeParameter {
 	 * X: Physikalische Ausdehnung des Quaders, in der Länge (Angabe in Anzahl
 	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QL = 100;
+	public static final int QL = 200;
 
 	/**
 	 * Y: Physikalische Ausdehnung des Quaders, in der Breite (Angabe in Anzahl
 	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QB = 100;
+	public static final int QB = 10;
 
 	/**
 	 * Z: Physikalische Ausdehnung des Quaders, in der Höhe (Angabe in Anzahl
 	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QH = 50;
+	public static final int QH = 100;
 
 	/**
 	 * Kantenlänge des finiten Elementes (einer Zelle).
@@ -41,7 +41,7 @@ public class InitializeParameter {
 	/**
 	 * Anzahl der Iterationsschritte.
 	 */
-	public static final int N = 200;
+	public static final int N = 100;
 
 	/**
 	 * Randtemperatur der linken Quaderseite.
@@ -120,7 +120,7 @@ public class InitializeParameter {
 	 * 2: Wärmequelle in der Mitte der Fläche <br>
 	 * 3: Sinusfunktion, Änderung im zeitlichen Verlauf
 	 */
-	public static final int HEAT_MODE = 1;
+	public static final int HEAT_MODE = 2;
 
 	/**
 	 * Sollen die Zwischenschritte und das Endergebnis visualisiert werden?

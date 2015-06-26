@@ -58,13 +58,13 @@ public class ControlUnit implements Runnable {
 			// Sollen die Zwischenschritte visualisiert werden? Ansonsten wird
 			// nur noch die letzte Ausgabe visualisiert.
 			if (InitializeParameter.VISUALIZATION || lastStepVisualization) {
+				long startTimeDrawing = System.currentTimeMillis();
 				// Berechnung der Farben für den letzten Schritt.
 				if (lastStepVisualization) {
 					InitializeServices.initializeColorArray();
 				}
 
 				// Fläche neu einfärben
-				long startTimeDrawing = System.currentTimeMillis();
 				final FutureTask<Void> updateOutputWindowTask = new FutureTask<Void>(
 						new Callable<Void>() {
 							@Override
