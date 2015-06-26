@@ -8,11 +8,11 @@ import javafx.scene.image.PixelWriter;
 import javafx.scene.image.WritableImage;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
-import parallel.ControlUnit;
-import parallel.SharedVariables;
+import parallel.InitializeParameter;
+import parallel.computing.ControlUnit;
 import parallel.init.InitializeCuboid;
-import parallel.init.InitializeParameter;
 import parallel.init.InitializeServices;
+import parallel.init.SharedVariables;
 
 /**
  * Visualisierung der Wärmediffusion als 2D Querschnitt des Quaders.

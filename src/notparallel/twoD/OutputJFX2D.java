@@ -11,7 +11,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
-import parallel.init.InitializeParameter;
+import parallel.InitializeParameter;
 
 public class OutputJFX2D extends Application {
 

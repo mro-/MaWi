@@ -1,8 +1,8 @@
 package parallel.visualization;
 
 import javafx.scene.paint.Color;
-import parallel.SharedVariables;
-import parallel.init.InitializeParameter;
+import parallel.InitializeParameter;
+import parallel.init.SharedVariables;
 
 /**
  * Kapselt alle Methoden zur farblichen Gestaltung der anzuzeigenden Fläche.

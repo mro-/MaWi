@@ -1,6 +1,6 @@
 package parallel.computing;
 
-import parallel.SharedVariables;
+import parallel.init.SharedVariables;
 import parallel.visualization.ColorService;
 
 /**

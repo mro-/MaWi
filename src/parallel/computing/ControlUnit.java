@@ -1,4 +1,4 @@
-package parallel;
+package parallel.computing;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,7 +10,8 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-import parallel.init.InitializeParameter;
+import parallel.InitializeParameter;
+import parallel.init.SharedVariables;
 import parallel.visualization.ColorService;
 import parallel.visualization.OutputJFX;
 import javafx.application.Platform;

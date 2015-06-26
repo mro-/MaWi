@@ -1,8 +1,8 @@
-package parallel;
+package parallel.init;
 
+import parallel.InitializeParameter;
 import parallel.computing.ComputingCallable;
 import parallel.computing.ComputingRunnable;
-import parallel.init.InitializeParameter;
 import javafx.scene.paint.Color;
 
 /**

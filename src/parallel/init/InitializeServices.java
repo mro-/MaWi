@@ -1,6 +1,6 @@
 package parallel.init;
 
-import parallel.SharedVariables;
+import parallel.InitializeParameter;
 import parallel.computing.ComputingCallable;
 import parallel.computing.ComputingRunnable;
 import parallel.visualization.ColorService;

@@ -1,4 +1,4 @@
-package parallel.init;
+package parallel;
 
 /**
  * Modul dient der Festlegung aller Konfigurationsparameter.

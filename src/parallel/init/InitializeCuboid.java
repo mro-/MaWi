@@ -1,6 +1,6 @@
 package parallel.init;
 
-import parallel.SharedVariables;
+import parallel.InitializeParameter;
 
 /**
  * Alle Methoden um den Quader, je nach Konfiguration, initial mit allen

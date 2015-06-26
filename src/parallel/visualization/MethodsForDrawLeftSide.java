@@ -1,7 +1,7 @@
 package parallel.visualization;
 
-import parallel.SharedVariables;
-import parallel.init.InitializeParameter;
+import parallel.InitializeParameter;
+import parallel.init.SharedVariables;
 import javafx.scene.Scene;
 import javafx.scene.image.ImageView;
 import javafx.scene.image.PixelWriter;
