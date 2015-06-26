@@ -10,11 +10,12 @@ import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import javafx.application.Platform;
 import parallel.InitializeParameter;
+import parallel.init.InitializeServices;
 import parallel.init.SharedVariables;
 import parallel.visualization.ColorService;
 import parallel.visualization.OutputJFX;
-import javafx.application.Platform;
 
 /**
  * Main Runnable, dass für die Aktualisierung des Ausgabefensters zuständig ist.
@@ -52,25 +53,36 @@ public class ControlUnit implements Runnable {
 				createAndRunThreadsWithoutPool();
 			}
 
-			// Fläche neu einfärben
-			long startTimeDrawing = System.currentTimeMillis();
-			final FutureTask<Void> updateOutputWindowTask = new FutureTask<Void>(
-					new Callable<Void>() {
-						@Override
-						public Void call() throws Exception {
-							OutputJFX.updatePixelInView();
-							return null;
-						}
-					});
-			Platform.runLater(updateOutputWindowTask);
-			// Warten bis zeichnen fertig ist und erst dann weiter machen
-			try {
-				updateOutputWindowTask.get();
-			} catch (InterruptedException | ExecutionException e1) {
-				e1.printStackTrace();
+			boolean lastStepVisualization = !InitializeParameter.VISUALIZATION
+					&& n == InitializeParameter.N;
+			// Sollen die Zwischenschritte visualisiert werden? Ansonsten wird
+			// nur noch die letzte Ausgabe visualisiert.
+			if (InitializeParameter.VISUALIZATION || lastStepVisualization) {
+				// Berechnung der Farben für den letzten Schritt.
+				if (lastStepVisualization) {
+					InitializeServices.initializeColorArray();
+				}
+
+				// Fläche neu einfärben
+				long startTimeDrawing = System.currentTimeMillis();
+				final FutureTask<Void> updateOutputWindowTask = new FutureTask<Void>(
+						new Callable<Void>() {
+							@Override
+							public Void call() throws Exception {
+								OutputJFX.updatePixelInView();
+								return null;
+							}
+						});
+				Platform.runLater(updateOutputWindowTask);
+				// Warten bis zeichnen fertig ist und erst dann weiter machen
+				try {
+					updateOutputWindowTask.get();
+				} catch (InterruptedException | ExecutionException e1) {
+					e1.printStackTrace();
+				}
+				long endTimeDrawing = System.currentTimeMillis();
+				timeDrawing += (endTimeDrawing - startTimeDrawing) / 1000.0f;
 			}
-			long endTimeDrawing = System.currentTimeMillis();
-			timeDrawing += (endTimeDrawing - startTimeDrawing) / 1000.0f;
 
 			// Merker setzen, welches Array die Ausgangslage für den
 			// nächsten Iterationsschritt enthält

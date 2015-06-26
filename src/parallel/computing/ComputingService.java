@@ -1,5 +1,6 @@
 package parallel.computing;
 
+import parallel.InitializeParameter;
 import parallel.init.SharedVariables;
 import parallel.visualization.ColorService;
 
@@ -46,9 +47,12 @@ public class ComputingService {
 					// Temperatur verändert hat
 					// FIXME => Optimierung, Farbe könnte auch immer am Ende
 					// berechnet werden für alle Zellen
-					if (z == SharedVariables.Z_HALF
-							&& newTemperature != oldTemperature) {
-						ColorService.computeAndSetColor(newTemperature, x, y);
+					if (InitializeParameter.VISUALIZATION) {
+						if (z == SharedVariables.Z_HALF
+								&& newTemperature != oldTemperature) {
+							ColorService.computeAndSetColor(newTemperature, x,
+									y);
+						}
 					}
 				}
 			}

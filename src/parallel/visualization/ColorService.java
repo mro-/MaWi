@@ -82,9 +82,7 @@ public class ColorService {
 		// FIXME synchronized Block eingetlich nicht nötig, da nicht in gleiche
 		// Felder geschrieben wird und das lesen erst nach dem Schreiben
 		// stattfindet.
-		// synchronized (SharedVariables.tempInColor) {
 		SharedVariables.tempInColor[x][y] = COLORS[mappedTemperatureI];
-		// }
 	}
 
 }

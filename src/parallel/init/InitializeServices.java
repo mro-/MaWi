@@ -51,19 +51,12 @@ public class InitializeServices {
 	 * Initialisierungstemperaturen.
 	 */
 	public static void initializeColorArray() {
-		for (int x = 0; x < SharedVariables.QLR_2D; x = x
-				+ InitializeParameter.CELL_WIDTH) {
-			for (int y = 0; y < SharedVariables.QBR_2D; y = y
-					+ InitializeParameter.CELL_WIDTH) {
-
-				// Auf x und y Quaderzellen runterrechnen
-				int xCell = x / InitializeParameter.CELL_WIDTH;
-				int yCell = y / InitializeParameter.CELL_WIDTH;
-
-				float temperature = SharedVariables.u1[xCell][yCell][SharedVariables.Z_HALF];
+		for (int x = 0; x < SharedVariables.QLR; x++) {
+			for (int y = 0; y < SharedVariables.QBR; y++) {
+				float temperature = SharedVariables.u1[x][y][SharedVariables.Z_HALF];
 
 				// Color Array initialisieren
-				ColorService.computeAndSetColor(temperature, xCell, yCell);
+				ColorService.computeAndSetColor(temperature, x, y);
 			}
 		}
 	}
