@@ -1,5 +1,7 @@
 package parallel.init;
 
+import java.util.concurrent.ThreadPoolExecutor;
+
 import javafx.scene.paint.Color;
 import parallel.InitializeParameter;
 import parallel.computing.ComputingCallable;
@@ -92,5 +94,15 @@ public class SharedVariables {
 	 * einem Threadpool. (Aufteilung in Scheiben)
 	 */
 	public static ComputingCallable[] computingCallable = new ComputingCallable[InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL];
+
+	/**
+	 * Thread-Pool
+	 */
+	public static ThreadPoolExecutor executor;
+
+	/**
+	 * Startzeit
+	 */
+	public static long startTime;
 
 }

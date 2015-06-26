@@ -2,13 +2,11 @@ package parallel.computing;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
 
 import javafx.application.Platform;
 import parallel.InitializeParameter;
@@ -25,31 +23,21 @@ public class ControlUnit implements Runnable {
 
 	@Override
 	public void run() {
-		// Startzeit messen
-		long startTime = System.currentTimeMillis();
-
-		// Thread-Pooling
-		ThreadPoolExecutor executor;
-		if (InitializeParameter.THREAD_POOL) {
-			executor = new ThreadPoolExecutor(
-					InitializeParameter.NUMBER_OF_THREADS,
-					InitializeParameter.NUMBER_OF_THREADS,
-					0,
-					TimeUnit.SECONDS,
-					new ArrayBlockingQueue<>(
-							InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL));
-		}
-
+		float computingTime = 0;
 		// Iterationsschritte durchführen
 		for (int n = 1; n <= InitializeParameter.N; n++) {
 			// Berechnung aller Quaderfelder (Rand wird nicht verändert)
+			// Parallele Berechnungszeit messen
+			long computingStartTime = System.currentTimeMillis();
 			if (InitializeParameter.THREAD_POOL) {
 				// Mittels Thread-Pool
-				createAndRunThreadsWithPool(executor);
+				runThreadsWithPool(SharedVariables.executor);
 			} else {
 				// Mit einzelnen Threads
 				createAndRunThreadsWithoutPool();
 			}
+			long computingEndTime = System.currentTimeMillis();
+			computingTime += (computingEndTime - computingStartTime);
 
 			boolean lastStepVisualization = !InitializeParameter.VISUALIZATION
 					&& n == InitializeParameter.N;
@@ -93,9 +81,13 @@ public class ControlUnit implements Runnable {
 				updateRTLSinus(n);
 			}
 		}
-		// Endzeit messen
+		// Berechnungszeit ausrechnen
+		computingTime = computingTime / 1000f;
+		System.out.println("Berechnungszeit: " + computingTime);
+
+		// Gesamtzeit messen
 		long endTime = System.currentTimeMillis();
-		float time = (endTime - startTime) / 1000.0f;
+		float time = (endTime - SharedVariables.startTime) / 1000f;
 		System.out.println("Gesamtzeit: " + time);
 	}
 
@@ -123,7 +115,7 @@ public class ControlUnit implements Runnable {
 	/**
 	 * Erzeugt Threads mitteln Nutzung eines Thread-Pools.
 	 */
-	private void createAndRunThreadsWithPool(ThreadPoolExecutor executor) {
+	private void runThreadsWithPool(ThreadPoolExecutor executor) {
 		List<Future<Void>> futures = new ArrayList<Future<Void>>(
 				InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL);
 		// threads aus Thread-Pool starten

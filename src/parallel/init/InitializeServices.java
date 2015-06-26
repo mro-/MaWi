@@ -1,5 +1,9 @@
 package parallel.init;
 
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
+
 import parallel.InitializeParameter;
 import parallel.computing.ComputingCallable;
 import parallel.computing.ComputingRunnable;
@@ -59,6 +63,17 @@ public class InitializeServices {
 				ColorService.computeAndSetColor(temperature, x, y);
 			}
 		}
+	}
+
+	/**
+	 * Initialisierung des Thread-Pools.
+	 */
+	public static void initializeThreadPool() {
+		SharedVariables.executor = new ThreadPoolExecutor(
+				InitializeParameter.NUMBER_OF_THREADS,
+				InitializeParameter.NUMBER_OF_THREADS, 0, TimeUnit.SECONDS,
+				new ArrayBlockingQueue<>(
+						InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL));
 	}
 
 }

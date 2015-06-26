@@ -22,6 +22,9 @@ public class OutputJFX extends Application {
 	private static PixelWriter pixelWriter;
 
 	public static void main(String[] args) {
+		// Gesamtzeit messen
+		SharedVariables.startTime = System.currentTimeMillis();
+
 		Application.launch(args);
 	}
 
@@ -38,6 +41,11 @@ public class OutputJFX extends Application {
 
 		// Berechnungsservices anlegen
 		InitializeServices.createComputingServices();
+
+		// Thread-Pool initialisieren
+		if (InitializeParameter.THREAD_POOL) {
+			InitializeServices.initializeThreadPool();
+		}
 
 		// Fläche einfärben
 		updatePixelInView();
