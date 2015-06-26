@@ -27,8 +27,6 @@ public class ControlUnit implements Runnable {
 	public void run() {
 		// Startzeit messen
 		long startTime = System.currentTimeMillis();
-		// Zeit um Ausgabefenster neu zu zeichnen
-		float timeDrawing = 0;
 
 		// Thread-Pooling
 		ThreadPoolExecutor executor;
@@ -58,8 +56,7 @@ public class ControlUnit implements Runnable {
 			// Sollen die Zwischenschritte visualisiert werden? Ansonsten wird
 			// nur noch die letzte Ausgabe visualisiert.
 			if (InitializeParameter.VISUALIZATION || lastStepVisualization) {
-				long startTimeDrawing = System.currentTimeMillis();
-				// Berechnung der Farben für den letzten Schritt.
+				// Berechnung der Farben für den letzten Schritt
 				if (lastStepVisualization) {
 					InitializeServices.initializeColorArray();
 				}
@@ -80,8 +77,6 @@ public class ControlUnit implements Runnable {
 				} catch (InterruptedException | ExecutionException e1) {
 					e1.printStackTrace();
 				}
-				long endTimeDrawing = System.currentTimeMillis();
-				timeDrawing += (endTimeDrawing - startTimeDrawing) / 1000.0f;
 			}
 
 			// Merker setzen, welches Array die Ausgangslage für den
@@ -102,9 +97,6 @@ public class ControlUnit implements Runnable {
 		long endTime = System.currentTimeMillis();
 		float time = (endTime - startTime) / 1000.0f;
 		System.out.println("Gesamtzeit: " + time);
-
-		// Zeit ohne Zeichnen des Ausgabefensters
-		System.out.println("Zeit ohne Visualisierung: " + (time - timeDrawing));
 	}
 
 	/**

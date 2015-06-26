@@ -9,13 +9,13 @@ public class InitializeParameter {
 	 * X: Physikalische Ausdehnung des Quaders, in der Länge (Angabe in Anzahl
 	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QL = 200;
+	public static final int QL = 100;
 
 	/**
 	 * Y: Physikalische Ausdehnung des Quaders, in der Breite (Angabe in Anzahl
 	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QB = 10;
+	public static final int QB = 100;
 
 	/**
 	 * Z: Physikalische Ausdehnung des Quaders, in der Höhe (Angabe in Anzahl
@@ -125,6 +125,6 @@ public class InitializeParameter {
 	/**
 	 * Sollen die Zwischenschritte und das Endergebnis visualisiert werden?
 	 */
-	public static final boolean VISUALIZATION = false;
+	public static final boolean VISUALIZATION = true;
 
 }
