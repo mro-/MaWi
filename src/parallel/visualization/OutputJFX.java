@@ -27,15 +27,6 @@ public class OutputJFX extends Application {
 
 	@Override
 	public void start(Stage primaryStage) {
-		// FIMXE löschen
-		Runtime rt = Runtime.getRuntime();
-		System.out.println("Verfügbare Prozessoren: "
-				+ rt.availableProcessors());
-		System.out.println("Verfügbarer Speicher JVM: " + rt.totalMemory()
-				+ "Freier Speicher JVM: " + rt.freeMemory());
-		// Garbage Collector
-		// rt.gc();
-
 		// Ausgabefenster initialisieren
 		initializeOutputWindow(primaryStage);
 
