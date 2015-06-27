@@ -30,6 +30,12 @@ public class InitializeServices {
 			numberOfAreas = InitializeParameter.NUMBER_OF_THREADS;
 		}
 
+		if (numberOfAreas > InitializeParameter.QL) {
+			numberOfAreas = InitializeParameter.QL;
+			System.out
+					.println("Die Anzahl der Scheiben (NUMBER_OF_THREADS bzw. NUMBER_OF_DATA_AREAS_THREADPOOL) darf nicht größer als die QB sein");
+		}
+
 		int dataRangeQL = SharedVariables.QLR / numberOfAreas;
 		for (int i = 0; i < numberOfAreas; i++) {
 			// Automatische Aufteilung der Daten (in Scheiben)
