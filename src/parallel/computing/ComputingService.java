@@ -45,8 +45,6 @@ public class ComputingService {
 					}
 					// Farbe für entsprechende Zellen berechnen, falls sich die
 					// Temperatur verändert hat
-					// FIXME => Optimierung, Farbe könnte auch immer am Ende
-					// berechnet werden für alle Zellen
 					if (InitializeParameter.VISUALIZATION) {
 						if (z == SharedVariables.Z_HALF
 								&& newTemperature != oldTemperature) {

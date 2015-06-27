@@ -9,7 +9,7 @@ public class InitializeParameter {
 	 * X: Physikalische Ausdehnung des Quaders, in der Länge (Angabe in Anzahl
 	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QL = 20;
+	public static final int QL = 100;
 
 	/**
 	 * Y: Physikalische Ausdehnung des Quaders, in der Breite (Angabe in Anzahl
@@ -41,12 +41,12 @@ public class InitializeParameter {
 	/**
 	 * Anzahl der Iterationsschritte.
 	 */
-	public static final int N = 100;
+	public static final int N = 300;
 
 	/**
 	 * Randtemperatur der linken Quaderseite.
 	 */
-	public static final float RTL = 300;
+	public static final float RTL = 500;
 
 	/**
 	 * Randtemperatur der rechten Quaderseite.
@@ -56,12 +56,12 @@ public class InitializeParameter {
 	/**
 	 * Randtemperatur der vorderen Quaderseite.
 	 */
-	public static final float RTV = 0;
+	public static final float RTV = 100;
 
 	/**
 	 * Randtemperatur der hinteren Quaderseite.
 	 */
-	public static final float RTH = 0;
+	public static final float RTH = 100;
 
 	/**
 	 * Randtemperatur der unteren Quaderseite.
@@ -76,7 +76,7 @@ public class InitializeParameter {
 	/**
 	 * Temperatur des Quaders zum Startzeitpunkt t=0.
 	 */
-	public static final float TS = 0;
+	public static final float TS = 100;
 
 	/**
 	 * Festlegung der minimalen Temperatur (Simulationsfarbe blau).
@@ -98,7 +98,7 @@ public class InitializeParameter {
 	 * Werden die Threads mittels Threadpool verwaltet? Bei false werden immer
 	 * neue Threads angelegt.
 	 */
-	public static final boolean THREAD_POOL = false;
+	public static final boolean THREAD_POOL = true;
 
 	/**
 	 * Gibt die Anzahl der Threads an. Konfigurierbar für die Leistungsmessung
@@ -121,7 +121,7 @@ public class InitializeParameter {
 	 * 2: Wärmequelle in der Mitte der Fläche <br>
 	 * 3: Sinusfunktion, Änderung im zeitlichen Verlauf
 	 */
-	public static final int HEAT_MODE = 2;
+	public static final int HEAT_MODE = 1;
 
 	/**
 	 * Sollen die Zwischenschritte und das Endergebnis visualisiert werden?
