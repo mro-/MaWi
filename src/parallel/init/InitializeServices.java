@@ -33,7 +33,7 @@ public class InitializeServices {
 		if (numberOfAreas > InitializeParameter.QL) {
 			numberOfAreas = InitializeParameter.QL;
 			System.out
-					.println("Die Anzahl der Scheiben (NUMBER_OF_THREADS bzw. NUMBER_OF_DATA_AREAS_THREADPOOL) darf nicht größer als die QB sein");
+					.println("Die Anzahl der Scheiben (NUMBER_OF_THREADS bzw. NUMBER_OF_DATA_AREAS_THREADPOOL) darf nicht größer als die QL sein");
 		}
 
 		int dataRangeQL = SharedVariables.QLR / numberOfAreas;
