@@ -117,9 +117,9 @@ public class ControlUnit implements Runnable {
 	 */
 	private void runThreadsWithPool(ThreadPoolExecutor executor) {
 		List<Future<Void>> futures = new ArrayList<Future<Void>>(
-				InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL);
+				SharedVariables.numberOfAreas);
 		// threads aus Thread-Pool starten
-		for (int i = 0; i < InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL; i++) {
+		for (int i = 0; i < SharedVariables.numberOfAreas; i++) {
 			futures.add(executor.submit(SharedVariables.computingCallable[i]));
 		}
 		// Nötig, damit erst weiter gemacht wird wenn alle Threads fertig sein

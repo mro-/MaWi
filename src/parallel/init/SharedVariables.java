@@ -84,6 +84,11 @@ public class SharedVariables {
 	public static Color[][] tempInColor = new Color[QLR][QBR];
 
 	/**
+	 * Gibt an in wieviele Scheiben der Quader aufgeteilt worden ist.
+	 */
+	public static int numberOfAreas;
+
+	/**
 	 * Array, das die Berechnungsservices beinhaltet. Berechnung erfolgt mit
 	 * immer neu angelegten Threads. (Aufteilung in Scheiben)
 	 */

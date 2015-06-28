@@ -9,7 +9,7 @@ public class InitializeParameter {
 	 * X: Physikalische Ausdehnung des Quaders, in der Länge (Angabe in Anzahl
 	 * der Zellen, Wert >> 1).
 	 */
-	public static final int QL = 100;
+	public static final int QL = 50;
 
 	/**
 	 * Y: Physikalische Ausdehnung des Quaders, in der Breite (Angabe in Anzahl
@@ -41,12 +41,12 @@ public class InitializeParameter {
 	/**
 	 * Anzahl der Iterationsschritte.
 	 */
-	public static final int N = 300;
+	public static final int N = 150;
 
 	/**
 	 * Randtemperatur der linken Quaderseite.
 	 */
-	public static final float RTL = 500;
+	public static final float RTL = 300;
 
 	/**
 	 * Randtemperatur der rechten Quaderseite.
@@ -104,13 +104,12 @@ public class InitializeParameter {
 	 * Gibt die Anzahl der Threads an. Konfigurierbar für die Leistungsmessung
 	 * (Wert >> 0).
 	 */
-	public static final int NUMBER_OF_THREADS = 4;
+	public static final int NUMBER_OF_THREADS = 1;
 
 	/**
 	 * Gibt an in wieviele Scheiben der Quader aufgeteilt werden sollen (Wert >>
 	 * 0). Funktioniert nur im Zusammenhang mit der Thread-Pool Nutzung. Ohne
-	 * Thread-Pool muss die Anzahl so groß sein, wie NUMBER_OF_THREADS.
-	 * Ansonsten passt die Berechnung nicht und es kommt zur Fehlermeldung. <br>
+	 * Thread-Pool muss die Anzahl so groß sein, wie NUMBER_OF_THREADS. <br>
 	 * Konfigurierbar für die Leistungsmessung. <br>
 	 */
 	public static final int NUMBER_OF_DATA_AREAS_THREADPOOL = 4;

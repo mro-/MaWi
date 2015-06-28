@@ -22,24 +22,23 @@ public class InitializeServices {
 	public static void createComputingServices() {
 		int start = 1;
 		int end;
-		int numberOfAreas;
 		// Ja nach Thread Varinate die Unterteilung vornehmen
 		if (InitializeParameter.THREAD_POOL) {
-			numberOfAreas = InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL;
+			SharedVariables.numberOfAreas = InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL;
 		} else {
-			numberOfAreas = InitializeParameter.NUMBER_OF_THREADS;
+			SharedVariables.numberOfAreas = InitializeParameter.NUMBER_OF_THREADS;
 		}
 
-		if (numberOfAreas > InitializeParameter.QL) {
-			numberOfAreas = InitializeParameter.QL;
+		if (SharedVariables.numberOfAreas > InitializeParameter.QL) {
+			SharedVariables.numberOfAreas = InitializeParameter.QL;
 			System.out
 					.println("Die Anzahl der Scheiben (NUMBER_OF_THREADS bzw. NUMBER_OF_DATA_AREAS_THREADPOOL) darf nicht größer als die QL sein");
 		}
 
-		int dataRangeQL = SharedVariables.QLR / numberOfAreas;
-		for (int i = 0; i < numberOfAreas; i++) {
+		int dataRangeQL = SharedVariables.QLR / SharedVariables.numberOfAreas;
+		for (int i = 0; i < SharedVariables.numberOfAreas; i++) {
 			// Automatische Aufteilung der Daten (in Scheiben)
-			if (i < numberOfAreas - 1) {
+			if (i < SharedVariables.numberOfAreas - 1) {
 				end = start + dataRangeQL;
 			} else {
 				end = SharedVariables.QLR - 1;
