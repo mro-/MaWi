@@ -46,6 +46,8 @@ public class ControlUnit implements Runnable {
 			// nur noch die letzte Ausgabe visualisiert.
 			boolean lastStepVisualization = !InitializeParameter.VISUALIZATION
 					&& n == InitializeParameter.N;
+
+			// Visualisierung der Einzelschritte oder der letzten Anzeige
 			if (InitializeParameter.VISUALIZATION || lastStepVisualization) {
 				// Berechnung der Farben für den letzten Schritt
 				if (lastStepVisualization) {
