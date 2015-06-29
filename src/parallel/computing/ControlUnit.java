@@ -17,18 +17,20 @@ import parallel.visualization.OutputJFX;
 
 /**
  * Main Runnable, dass für die Aktualisierung des Ausgabefensters zuständig ist.
- * Alle weiteren Threads werden von hier angestoßen.
+ * Alle weiteren Threads zur Berechnung werden von hier aus angestoßen.
  */
 public class ControlUnit implements Runnable {
 
 	@Override
 	public void run() {
 		float computingTime = 0;
+
 		// Iterationsschritte durchführen
 		for (int n = 1; n <= InitializeParameter.N; n++) {
 			// Berechnung aller Quaderfelder (Rand wird nicht verändert)
 			// Parallele Berechnungszeit messen
 			long computingStartTime = System.currentTimeMillis();
+
 			if (InitializeParameter.THREAD_POOL) {
 				// Mittels Thread-Pool
 				runThreadsWithPool(SharedVariables.executor);
@@ -36,20 +38,21 @@ public class ControlUnit implements Runnable {
 				// Mit einzelnen Threads
 				createAndRunThreadsWithoutPool();
 			}
+
 			long computingEndTime = System.currentTimeMillis();
 			computingTime += (computingEndTime - computingStartTime);
 
+			// Sollen die Zwischenschritte visualisiert werden? Wenn nicht, wird
+			// nur noch die letzte Ausgabe visualisiert.
 			boolean lastStepVisualization = !InitializeParameter.VISUALIZATION
 					&& n == InitializeParameter.N;
-			// Sollen die Zwischenschritte visualisiert werden? Ansonsten wird
-			// nur noch die letzte Ausgabe visualisiert.
 			if (InitializeParameter.VISUALIZATION || lastStepVisualization) {
 				// Berechnung der Farben für den letzten Schritt
 				if (lastStepVisualization) {
 					InitializeServices.initializeColorArray();
 				}
 
-				// Fläche neu einfärben
+				// Fläche einfärben
 				final FutureTask<Void> updateOutputWindowTask = new FutureTask<Void>(
 						new Callable<Void>() {
 							@Override
@@ -59,7 +62,8 @@ public class ControlUnit implements Runnable {
 							}
 						});
 				Platform.runLater(updateOutputWindowTask);
-				// Warten bis zeichnen fertig ist und erst dann weiter machen
+				// Warten bis das Zeichnen fertig ist und erst dann weiter
+				// machen
 				try {
 					updateOutputWindowTask.get();
 				} catch (InterruptedException | ExecutionException e1) {
@@ -67,13 +71,7 @@ public class ControlUnit implements Runnable {
 				}
 			}
 
-			// Merker setzen, welches Array die Ausgangslage für den
-			// nächsten Iterationsschritt enthält
-			if (SharedVariables.isu1Base) {
-				SharedVariables.isu1Base = false;
-			} else {
-				SharedVariables.isu1Base = true;
-			}
+			swithBaseArray();
 
 			// Randtemperatur der linken Seite aktualisieren, falls Temperatur
 			// sich sinusförmige ändern soll
@@ -92,7 +90,26 @@ public class ControlUnit implements Runnable {
 	}
 
 	/**
-	 * Erzeugt Threads ohne die Nutzung eines Thread-Poolings.
+	 * Setzt in {@link SharedVariables} den {@link Boolean} iu1Base um.
+	 * Benötigt, um im nächsten Berechnungsschritt das richtige Array als
+	 * Ausgangsbasis für die neuen Berechnungen zu verwendet. Der Wechsel
+	 * zwischen den Arrays u1 und u2 erspart ein aufwändiges ArrayCopy.
+	 */
+	private void swithBaseArray() {
+		// Merker setzen, welches Array die Ausgangslage für den
+		// nächsten Iterationsschritt bildet
+		if (SharedVariables.isu1Base) {
+			SharedVariables.isu1Base = false;
+		} else {
+			SharedVariables.isu1Base = true;
+		}
+	}
+
+	/**
+	 * Erzeugt Threads ohne die Nutzung eines Thread-Poolings. <br>
+	 * Verwendung der {@link Thread}-Join-Methode: Nach der Ausführung des
+	 * Berechnungsschrittes wird auf das Ergebnis aller Threads gewartet, damit
+	 * die Visualisierung in gleichen Schritten erfolgen kann.
 	 */
 	private void createAndRunThreadsWithoutPool() {
 		// Threads erzeugen
@@ -113,7 +130,10 @@ public class ControlUnit implements Runnable {
 	}
 
 	/**
-	 * Erzeugt Threads mitteln Nutzung eines Thread-Pools.
+	 * Erzeugt Threads mitteln Nutzung eines Thread-Pools. <br>
+	 * Verwendung des {@link Future}-Objektes: Nach der Ausführung des
+	 * Berechnungsschrittes wird auf das Ergebnis aller Threads gewartet, damit
+	 * die Visualisierung in gleichen Schritten erfolgen kann.
 	 */
 	private void runThreadsWithPool(ThreadPoolExecutor executor) {
 		List<Future<Void>> futures = new ArrayList<Future<Void>>(
@@ -122,8 +142,8 @@ public class ControlUnit implements Runnable {
 		for (int i = 0; i < SharedVariables.numberOfAreas; i++) {
 			futures.add(executor.submit(SharedVariables.computingCallable[i]));
 		}
-		// Nötig, damit erst weiter gemacht wird wenn alle Threads fertig sein
-		// (join).
+		// Nötig, damit erst weiter gemacht wird wenn alle Threads fertig sind
+		// (siehe join).
 		for (Future<Void> future : futures) {
 			try {
 				future.get();
@@ -137,13 +157,13 @@ public class ControlUnit implements Runnable {
 	 * Aktualisiert die Temperaturen der linken Seite gemäß der Sinusfunktion. <br>
 	 */
 	private void updateRTLSinus(int n) {
-		// n als double, damit mit Nachkommastellen gerechnet wird
+		// n als double, damit Nachkommastellen gerechnet werden
 		float sinusvalue = ((float) n) / 3;
 		// Berechnung der Temeratur mittels Sinus, Temperatur schwankt um die
 		// angegebenene Ausgangstemperatur der linken Seite
 		float newSinusTemperature = (float) ((Math.sin(sinusvalue) * 100) + InitializeParameter.RTL);
 
-		// Neue Temperatur im Quader der linken Seite zuordnen
+		// Neue Temperatur im Quader der aktuellen linken Seite zuordnen
 		if (SharedVariables.isu1Base) {
 			for (int x = 0; x < SharedVariables.QLR; x++) {
 				for (int z = 1; z < SharedVariables.QHR - 1; z++) {

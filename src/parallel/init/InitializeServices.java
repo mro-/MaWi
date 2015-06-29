@@ -16,13 +16,19 @@ import parallel.visualization.ColorService;
 public class InitializeServices {
 
 	/**
-	 * Erzeugt die initialien Berechnungsservices und teilt dazu den Quader in
-	 * Scheiben auf entlang der x-Achse.
+	 * Erzeugt die initialien Berechnungsservices und teilt dazu den Quader
+	 * entlang der X-Achse in Scheiben auf. <br>
+	 * Die Aufteilung ist davon abhängig, ob ein der Thread-Pool aktiviert ist
+	 * oder nicht. Bei Aktivierung kann sich die Anzahl der Scheiben von der
+	 * Anzahl der Threads unterscheiden. Bei Deaktivierung wird die Anzahl an
+	 * Scheiben mit der Anzahl an Threads gleich gesetzt. Das bedeutet, dass
+	 * nicht mehr Threads als Zellen auf der X-Achse initialisiert werden (auch
+	 * wenn die Größe eines finiten Elementes > 2 ist).
 	 */
 	public static void createComputingServices() {
 		int start = 1;
 		int end;
-		// Ja nach Thread Varinate die Unterteilung vornehmen
+		// Je nach Thread Variante die Unterteilung vornehmen
 		if (InitializeParameter.THREAD_POOL) {
 			SharedVariables.numberOfAreas = InitializeParameter.NUMBER_OF_DATA_AREAS_THREADPOOL;
 		} else {
@@ -37,7 +43,7 @@ public class InitializeServices {
 
 		int dataRangeQL = SharedVariables.QLR / SharedVariables.numberOfAreas;
 		for (int i = 0; i < SharedVariables.numberOfAreas; i++) {
-			// Automatische Aufteilung der Daten (in Scheiben)
+			// Automatische Aufteilung der Daten in Scheiben
 			if (i < SharedVariables.numberOfAreas - 1) {
 				end = start + dataRangeQL;
 			} else {
@@ -71,7 +77,7 @@ public class InitializeServices {
 	}
 
 	/**
-	 * Initialisierung des Thread-Pools.
+	 * Initialisierung des Thread-Pools mittels {@link ThreadPoolExecutor}
 	 */
 	public static void initializeThreadPool() {
 		SharedVariables.executor = new ThreadPoolExecutor(

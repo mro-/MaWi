@@ -12,6 +12,8 @@ public class ComputingService {
 
 	/**
 	 * Berechnung der Quaderfelder im entsprechenden Abschnitt des Quaders.
+	 * Diese Methode wird sowohl vom Thread-Pool {@link ComputingCallable} als
+	 * auch ohne Thread-Pooling verwendet {@link ComputingRunnable}.
 	 */
 	public static void compute(int xStart, int xEnd) {
 		float newTemperature;
@@ -20,6 +22,8 @@ public class ComputingService {
 		for (int x = xStart; x < xEnd; x++) {
 			for (int y = 1; y < SharedVariables.QBR - 1; y++) {
 				for (int z = 1; z < SharedVariables.QHR - 1; z++) {
+					// Berechnung der neuen Temperatur für u1 oder u2, je nach
+					// aktuellem u-Array
 					if (SharedVariables.isu1Base) {
 						oldTemperature = SharedVariables.u1[x][y][z];
 						newTemperature = oldTemperature

@@ -97,7 +97,11 @@ public class InitializeCuboid {
 	/**
 	 * Berechnung der Temperaturen der linken Seite, wenn die Wärmequelle in der
 	 * Mitte ist. Berechnung geht kreisförmig vor. Die Randtemperatur wird an
-	 * den vier Seiten gleich der Durchschnittstemperatur der Ränder gesetzt.
+	 * den vier Seiten gleich der Durchschnittstemperatur der Ränder gesetzt. <br>
+	 * <br>
+	 * Die Ausdehnung der Hitzequelle ist abhängig von den Längen der
+	 * Quader-Seiten: 2x2 bei gerade Länge, 3x3 bei ungerader Länge, 2x3 o. 3x2
+	 * bei einer geraden und einer ungeraden Länge
 	 */
 	private static void updateRTlinksForCentralHeatMode() {
 		// Ausdehnung der Hitzequelle in der Mitte
@@ -229,8 +233,9 @@ public class InitializeCuboid {
 	}
 
 	/**
-	 * Initialisiert eine Zelle des Quaders innerhalb der linken Seite mit der
-	 * entsprechenden Temperatur.
+	 * Zentrale Wärmequelle: Initialisiert eine Zelle des Quaders innerhalb der
+	 * linken Seite mit der entsprechenden Temperatur.
+	 * 
 	 */
 	private static void setTemperatureOnLeftSide(int counter, int x, int z) {
 		float temperature = InitializeParameter.RTL - (counter * factorPerCell);

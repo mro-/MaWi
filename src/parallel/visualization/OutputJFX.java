@@ -16,6 +16,8 @@ import parallel.init.SharedVariables;
 
 /**
  * Visualisierung der Wärmediffusion als 2D Querschnitt des Quaders.
+ * {@link Application}-Klasse
+ *
  */
 public class OutputJFX extends Application {
 
@@ -53,14 +55,15 @@ public class OutputJFX extends Application {
 		// Ausgabefenster anzeigen
 		primaryStage.show();
 
-		// Ausgabefenster aktualisieren
+		// Ausgabefenster aktualisieren und Thread von ControlUnit starten
 		Thread mainThread = new Thread(new ControlUnit());
 		mainThread.start();
 	}
 
 	/**
-	 * Einfärbung der angezeigten Fläche, anhand der Farben des Color Arrays. <br>
-	 * 1 Zelle wird als Quadrat von CELL_WIDTH Pixel visualisiert
+	 * Einfärbung der angezeigten Fläche anhand der Farben des Color Arrays in
+	 * {@link ColorService} <br>
+	 * Eine Zelle wird als Quadrat von CELL_WIDTH-Pixeln visualisiert
 	 */
 	public static void updatePixelInView() {
 		// Ausgabe, alle Felder berücksichtigen (inklusive Rand)

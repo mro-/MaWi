@@ -5,12 +5,13 @@ import parallel.InitializeParameter;
 import parallel.init.SharedVariables;
 
 /**
- * Kapselt alle Methoden zur farblichen Gestaltung der anzuzeigenden Fläche.
+ * Kapselt alle Methoden und Daten zur farblichen Gestaltung der anzuzeigenden
+ * Fläche.
  */
 public class ColorService {
 
 	/**
-	 * 101 Farben zur Darstellung. Von blau bis rot.
+	 * 101 Farben zur Darstellung der Farben von warm (rot) bis kalt (blau).
 	 */
 	private static final Color[] COLORS = { Color.rgb(28, 12, 93),
 			Color.rgb(32, 20, 126), Color.rgb(32, 23, 130),

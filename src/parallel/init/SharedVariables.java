@@ -8,7 +8,7 @@ import parallel.computing.ComputingCallable;
 import parallel.computing.ComputingRunnable;
 
 /**
- * Modul dient der Sammlung aller gemeinsamen Variablen.
+ * Modul, dient der Sammlung aller gemeinsamen Variablen.
  */
 public class SharedVariables {
 
@@ -41,39 +41,40 @@ public class SharedVariables {
 	public static final int Z_HALF = SharedVariables.QHR / 2;
 
 	/**
-	 * Durchschnittliche Randtemperatur der linken Randtemperaturen berechnen
+	 * Durchschnittliche Randtemperatur der Randtemperaturen berechnen
+	 * (Ausnahme: RTL und RTR)
 	 */
 	public static final float AVERAGE_BORDER_TEMP_LEFT_SIDE = (InitializeParameter.RTO
 			+ InitializeParameter.RTU + InitializeParameter.RTV + InitializeParameter.RTH) / 4;
 
 	/**
-	 * Länge der 2D Fläche zur Visualisierung.
+	 * Länge der 2D Fläche für die Visualisierung.
 	 */
 	public static final int QLR_2D = SharedVariables.QLR
 			* InitializeParameter.CELL_WIDTH;
 
 	/**
-	 * Breite der 2D Fläche zur Visualisierung.
+	 * Breite der 2D Fläche für die Visualisierung.
 	 */
 	public static final int QBR_2D = SharedVariables.QBR
 			* InitializeParameter.CELL_WIDTH;
 
 	/**
 	 * 3D Array mit folgender Koordinatenreihenfolge: [x][y][z]. Abbildung des
-	 * Quaders.
+	 * Quaders als Wechsel-Array
 	 */
 	public static float[][][] u1 = new float[QLR][QBR][QHR];
 
 	/**
 	 * 3D Array mit folgender Koordinatenreihenfolge: [x][y][z]. Abbildung des
-	 * Quaders.
+	 * Quaders als Wechsel-Array.
 	 */
 	public static float[][][] u2 = new float[QLR][QBR][QHR];
 
 	/**
 	 * Enthält u1 die Ausgangswerte zur Berechnung? Falls nicht enthält u2 die
-	 * alten Werte. Zustand wird mit dieser Variablen festgehalten, damit man
-	 * sich das Kopieren des Arrays spart.
+	 * alten Werte. Zustand wird mit dieser Variablen festgehalten, damit auf
+	 * das Kopieren des Arrays verzichtet werden kann
 	 */
 	public static boolean isu1Base = true;
 
@@ -84,7 +85,10 @@ public class SharedVariables {
 	public static Color[][] tempInColor = new Color[QLR][QBR];
 
 	/**
-	 * Gibt an in wieviele Scheiben der Quader aufgeteilt worden ist.
+	 * Gibt an, in wieviele Scheiben der Quader aufgeteilt worden ist. Dabei
+	 * wird darauf geachtet, dass die Anzahl der Scheiben nicht größer ist als
+	 * die Anzahl der Zellen auf der X-Achse (Durch Integer-Rundungen käme es
+	 * sonst evtl. zu Überschneidungen der Threads bei der Quader-Berechnung
 	 */
 	public static int numberOfAreas;
 
