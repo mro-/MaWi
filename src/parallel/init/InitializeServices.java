@@ -22,8 +22,7 @@ public class InitializeServices {
 	 * oder nicht. Bei Aktivierung kann sich die Anzahl der Scheiben von der
 	 * Anzahl der Threads unterscheiden. Bei Deaktivierung wird die Anzahl an
 	 * Scheiben mit der Anzahl an Threads gleich gesetzt. Das bedeutet, dass
-	 * nicht mehr Threads als Zellen auf der X-Achse initialisiert werden (auch
-	 * wenn die Größe eines finiten Elementes > 2 ist).
+	 * nicht mehr Threads als Zellen auf der X-Achse initialisiert werden.
 	 */
 	public static void createComputingServices() {
 		int start = 1;
