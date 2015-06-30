@@ -73,7 +73,7 @@ public class ControlUnit implements Runnable {
 				}
 			}
 
-			swithBaseArray();
+			switchBaseArray();
 
 			// Randtemperatur der linken Seite aktualisieren, falls Temperatur
 			// sich sinusförmige ändern soll
@@ -97,7 +97,7 @@ public class ControlUnit implements Runnable {
 	 * Ausgangsbasis für die neuen Berechnungen zu verwendet. Der Wechsel
 	 * zwischen den Arrays u1 und u2 erspart ein aufwändiges ArrayCopy.
 	 */
-	private void swithBaseArray() {
+	private void switchBaseArray() {
 		// Merker setzen, welches Array die Ausgangslage für den
 		// nächsten Iterationsschritt bildet
 		if (SharedVariables.isu1Base) {
